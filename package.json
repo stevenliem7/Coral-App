@@ -1,0 +1,18 @@
+{
+  "name": "coral-collective",
+  "version": "1.0.0",
+  "description": "CoralCollective - Visualising Small Actions as Ecosystem Growth",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "build": "echo 'Static site - no build needed'",
+    "start": "python3 -m http.server 8000"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.0"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  }
+}
