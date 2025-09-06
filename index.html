@@ -539,7 +539,7 @@
         // Real YOLOv8 bike detection function
         async function detectBicycle(imageData) {
             try {
-                const response = await fetch('http://localhost:5000/api/verify-bicycle', {
+                const response = await fetch('http://localhost:5001/api/verify-bicycle', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

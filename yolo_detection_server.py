@@ -186,6 +186,6 @@ if __name__ == '__main__':
     print("🪸 CoralCollective YOLOv8 Detection Server Starting...")
     print("📸 Bicycle detection ready!")
     print("♻️ Recyclables detection ready!")
-    print("🌐 Server running on http://localhost:5000")
+    print("🌐 Server running on http://localhost:5001")
     
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)
