@@ -1,14 +1,7 @@
 [
   {
-    "title": "Use a reusable water bottle",
-    "description": "Carry your water bottle today instead of buying plastic bottles.",
-    "points": 5,
-    "category": "Waste",
-    "carbonSavingKg": 0.05
-  },
-  {
-    "title": "Ride a bike instead of walking",
-    "description": "Take a photo of a bike to verify you chose cycling for sustainable transport!",
+    "title": "Ride 'n' Shine",
+    "description": "Swap the car for your bike today and enjoy a brighter, greener commute!",
     "points": 150,
     "category": "Transport",
     "carbonSavingKg": 1.5,
@@ -16,31 +9,23 @@
     "verificationTarget": "bicycle"
   },
   {
-    "title": "Walk or bike instead of driving",
-    "description": "Choose walking or cycling for at least one short trip today.",
-    "points": 120,
-    "category": "Transport",
-    "carbonSavingKg": 1.2
+    "title": "Bin It to Win It",
+    "description": "Recycle one item correctly — take a photo to prove you nailed it! (Unlimited daily)",
+    "points": 50,
+    "category": "Waste",
+    "carbonSavingKg": 0.0987,
+    "verification": "camera",
+    "verificationTarget": "recycling_bin",
+    "unlimited": true,
+    "displayUnit": "g"
   },
   {
-    "title": "Turn off lights when leaving a room",
-    "description": "Save electricity by turning off unused lights.",
-    "points": 10,
+    "title": "Watt's the Right Time?",
+    "description": "Use electricity at an eco-friendly time",
+    "points": 100,
     "category": "Energy",
-    "carbonSavingKg": 0.1
-  },
-  {
-    "title": "Eat a meat-free meal",
-    "description": "Try a vegetarian or vegan meal to reduce carbon footprint.",
-    "points": 200,
-    "category": "Food",
-    "carbonSavingKg": 2.0
-  },
-  {
-    "title": "Take public transport instead of driving",
-    "description": "Reduce your carbon footprint by using buses or trains.",
-    "points": 150,
-    "category": "Transport",
-    "carbonSavingKg": 1.5
+    "carbonSavingKg": 0.8,
+    "verification": "screenshot",
+    "verificationTarget": "energy_app"
   }
 ]

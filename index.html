@@ -80,32 +80,6 @@
                 </div>
             </section>
 
-            <!-- Coral Testing Controls -->
-            <section class="coral-testing" style="margin: 20px 0; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 15px;">
-                <div class="section-header">
-                    <h2 style="font-size: 1.2em; margin-bottom: 15px;">🧪 Coral Testing</h2>
-                </div>
-                <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                    <label for="coral-points-slider" style="color: white; font-size: 0.9em; min-width: 80px;">
-                        Points: <span id="coral-points-display">25</span>
-                    </label>
-                    <input 
-                        type="range" 
-                        id="coral-points-slider" 
-                        min="0" 
-                        max="200" 
-                        value="5"
-                        style="flex: 1; min-width: 150px; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; outline: none; -webkit-appearance: none;"
-                    />
-                    <button id="coral-random-btn" style="padding: 8px 16px; background: rgba(76,222,128,0.2); color: #4ade80; border: 1px solid #4ade80; border-radius: 20px; cursor: pointer; font-size: 0.8em;">
-                        🎲 Random
-                    </button>
-                    <button onclick="openCameraVerification(1, 'Ride a bike instead of walking')" style="padding: 8px 16px; background: rgba(74,222,128,0.2); color: #4ade80; border: 1px solid #4ade80; border-radius: 20px; cursor: pointer; font-size: 0.8em;">
-                        🚴‍♀️ Test Bike Goal
-                    </button>
-                </div>
-            </section>
-
             <!-- Today's Tasks -->
             <section class="tasks-section">
                 <div class="section-header">
@@ -167,8 +141,6 @@
 
         function updateCoralDisplay() {
             const growthPercent = Math.round((coralTargetPoints / coralMaxPoints) * 100);
-            document.getElementById('coral-points-display').textContent = Math.round(coralTargetPoints);
-            document.getElementById('coral-points-slider').value = coralTargetPoints;
             
             // Update the percentage display
             document.querySelector('.impact-percentage').textContent = growthPercent + '%';
@@ -221,16 +193,6 @@
             pixelDensity(window.devicePixelRatio || 1);
             noiseSeed(coralSeed);
             randomSeed(coralSeed);
-            
-            // Setup event listeners
-            document.getElementById('coral-points-slider').addEventListener('input', (e) => {
-                setCoralPoints(parseInt(e.target.value));
-            });
-
-            document.getElementById('coral-random-btn').addEventListener('click', () => {
-                const randomPoints = Math.floor(Math.random() * 180) + 10;
-                setCoralPoints(randomPoints);
-            });
             
             setCoralPoints(5); // Start with bleached coral
         }
@@ -670,12 +632,6 @@
                         // Close modal after success
                         setTimeout(() => {
                             closeCameraModal();
-                            
-                            // Show coral growth animation
-                            document.querySelector('.coral-testing').style.background = 'linear-gradient(135deg, #4CAF50, #8BC34A)';
-                            setTimeout(() => {
-                                document.querySelector('.coral-testing').style.background = '';
-                            }, 2000);
                         }, 3000);
                     }, 1000);
                     

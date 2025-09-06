@@ -44,41 +44,92 @@ class CoralImpactApp {
         });
     }
 
-    loadTasks() {
-        if (this.tasks.length === 0) {
-            this.tasks = [
-                {
-                    id: 1,
-                    title: 'Bike to Work',
-                    description: 'Use bike instead of car',
-                    co2Saved: 1.2,
-                    icon: 'bike',
-                    iconClass: 'fas fa-bicycle',
-                    completed: true
-                },
-                {
-                    id: 2,
-                    title: 'Reusable Water Bottle',
-                    description: 'Skip plastic bottles today',
-                    co2Saved: 0.8,
-                    icon: 'bottle',
-                    iconClass: 'fas fa-wine-bottle',
-                    completed: false
-                },
-                {
-                    id: 3,
-                    title: 'Turn Off Lights',
-                    description: 'Save energy at home',
-                    co2Saved: 0.4,
-                    icon: 'lights',
-                    iconClass: 'fas fa-lightbulb',
-                    completed: false
-                }
-            ];
+    async loadTasks() {
+        try {
+            // Always load from tasksList.json first to get latest tasks
+            const response = await fetch('tasksList.json');
+            const tasksData = await response.json();
+            
+            // Map JSON tasks to our format, preserving completion status if tasks exist
+            const existingTasks = this.tasks || [];
+            this.tasks = tasksData.map((task, index) => {
+                // Check if this task already exists and preserve its completion status
+                const existingTask = existingTasks.find(t => t.title === task.title);
+                return {
+                    id: index + 1,
+                    title: task.title,
+                    description: task.description,
+                    co2Saved: task.carbonSavingKg,
+                    icon: this.getIconForCategory(task.category),
+                    iconClass: this.getIconClassForCategory(task.category),
+                    completed: existingTask ? existingTask.completed : false,
+                    verification: task.verification,
+                    verificationTarget: task.verificationTarget,
+                    points: task.points,
+                    category: task.category,
+                    unlimited: task.unlimited || false,
+                    displayUnit: task.displayUnit || 'kg'
+                };
+            });
             this.saveTasks();
+        } catch (error) {
+            console.error('Error loading tasks from JSON:', error);
+            // Fallback to default tasks if JSON loading fails
+            if (this.tasks.length === 0) {
+                this.tasks = [
+                    {
+                        id: 1,
+                        title: 'Bike to Work',
+                        description: 'Use bike instead of car',
+                        co2Saved: 1.2,
+                        icon: 'bike',
+                        iconClass: 'fas fa-bicycle',
+                        completed: true
+                    },
+                    {
+                        id: 2,
+                        title: 'Reusable Water Bottle',
+                        description: 'Skip plastic bottles today',
+                        co2Saved: 0.8,
+                        icon: 'bottle',
+                        iconClass: 'fas fa-wine-bottle',
+                        completed: false
+                    },
+                    {
+                        id: 3,
+                        title: 'Turn Off Lights',
+                        description: 'Save energy at home',
+                        co2Saved: 0.4,
+                        icon: 'lights',
+                        iconClass: 'fas fa-lightbulb',
+                        completed: false
+                    }
+                ];
+                this.saveTasks();
+            }
         }
 
         this.renderTasks();
+    }
+
+    getIconForCategory(category) {
+        const iconMap = {
+            'Transport': 'bike',
+            'Waste': 'recycle',
+            'Energy': 'energy',
+            'Food': 'food'
+        };
+        return iconMap[category] || 'general';
+    }
+
+    getIconClassForCategory(category) {
+        const iconClassMap = {
+            'Transport': 'fas fa-bicycle',
+            'Waste': 'fas fa-recycle',
+            'Energy': 'fas fa-bolt',
+            'Food': 'fas fa-leaf'
+        };
+        return iconClassMap[category] || 'fas fa-check';
     }
 
     renderTasks() {
@@ -103,7 +154,7 @@ class CoralImpactApp {
                 <div class="task-description">${task.description}</div>
             </div>
             <div class="task-right">
-                <div class="task-co2">+${task.co2Saved}kg CO₂</div>
+                <div class="task-co2">-${task.displayUnit === 'g' ? (task.co2Saved * 1000).toFixed(1) + 'g' : task.co2Saved + 'kg'} CO₂</div>
                 <div class="task-status ${task.completed ? 'completed' : ''}" data-task-id="${task.id}">
                     ${task.completed ? '<i class="fas fa-check"></i>' : ''}
                 </div>
@@ -114,24 +165,66 @@ class CoralImpactApp {
         const statusElement = div.querySelector('.task-status');
         statusElement.addEventListener('click', (e) => {
             e.stopPropagation();
-            this.toggleTaskCompletion(task.id);
+            
+            // Check if task requires verification
+            if (task.verification === 'camera') {
+                this.openCameraVerification(task);
+            } else {
+                this.toggleTaskCompletion(task.id);
+            }
         });
 
         return div;
     }
 
+    openCameraVerification(task) {
+        // Check if we're on the main page with camera modal
+        const cameraModal = document.getElementById('camera-modal');
+        if (cameraModal) {
+            // Set current task for verification
+            this.currentVerificationTask = task;
+            cameraModal.style.display = 'flex';
+            this.startCamera();
+        } else {
+            // Redirect to todo page for verification
+            this.showNotification('Camera verification coming soon! For now, completing task... 📸');
+            this.toggleTaskCompletion(task.id);
+        }
+    }
+
     toggleTaskCompletion(taskId) {
         const task = this.tasks.find(t => t.id === taskId);
         if (task) {
-            task.completed = !task.completed;
-            
-            // Update daily stats
-            if (task.completed) {
+            // For unlimited tasks, always add to stats without toggling completion
+            if (task.unlimited) {
                 this.dailyStats.co2Saved += task.co2Saved;
                 this.dailyStats.completedTasks += 1;
+                
+                const co2Display = task.displayUnit === 'g' ? 
+                    `${(task.co2Saved * 1000).toFixed(1)}g` : 
+                    `${task.co2Saved}kg`;
+                const message = `Great job! You saved ${co2Display} CO₂! Keep going! 🌱♾️`;
+                this.showNotification(message);
             } else {
-                this.dailyStats.co2Saved -= task.co2Saved;
-                this.dailyStats.completedTasks -= 1;
+                // Regular task toggle
+                task.completed = !task.completed;
+                
+                // Update daily stats
+                if (task.completed) {
+                    this.dailyStats.co2Saved += task.co2Saved;
+                    this.dailyStats.completedTasks += 1;
+                } else {
+                    this.dailyStats.co2Saved -= task.co2Saved;
+                    this.dailyStats.completedTasks -= 1;
+                }
+                
+                const co2Display = task.displayUnit === 'g' ? 
+                    `${(task.co2Saved * 1000).toFixed(1)}g` : 
+                    `${task.co2Saved}kg`;
+                const message = task.completed ? 
+                    `Great job! You saved ${co2Display} CO₂! 🌱` : 
+                    'Task unchecked. Keep going! 💪';
+                this.showNotification(message);
             }
 
             this.saveTasks();
@@ -139,11 +232,6 @@ class CoralImpactApp {
             this.renderTasks();
             this.updateStats();
             this.updateProgressRing();
-            
-            const message = task.completed ? 
-                `Great job! You saved ${task.co2Saved}kg CO₂! 🌱` : 
-                'Task unchecked. Keep going! 💪';
-            this.showNotification(message);
         }
     }
 

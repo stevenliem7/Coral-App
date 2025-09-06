@@ -282,6 +282,18 @@ body {
     background: linear-gradient(135deg, #f59e0b, #d97706);
 }
 
+.task-icon.recycle {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.task-icon.energy {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.task-icon.general {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+}
+
 .task-content {
     flex: 1;
 }
