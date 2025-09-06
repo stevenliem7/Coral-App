@@ -1,7 +1,9 @@
 // Coral Environmental Impact App - JavaScript Functionality
 class CoralImpactApp {
     constructor() {
-        this.tasks = JSON.parse(localStorage.getItem('coralTasks')) || [];
+        // Clear old tasks to force reload from tasksList.json
+        localStorage.removeItem('coralTasks');
+        this.tasks = [];
         this.dailyStats = JSON.parse(localStorage.getItem('dailyStats')) || {
             co2Saved: 0,
             dayStreak: 1,
@@ -124,39 +126,8 @@ class CoralImpactApp {
             this.saveTasks();
         } catch (error) {
             console.error('Error loading tasks from JSON:', error);
-            // Fallback to default tasks if JSON loading fails
-            if (this.tasks.length === 0) {
-                this.tasks = [
-                    {
-                        id: 1,
-                        title: 'Bike to Work',
-                        description: 'Use bike instead of car',
-                        co2Saved: 1.2,
-                        icon: 'bike',
-                        iconClass: 'fas fa-bicycle',
-                        completed: true
-                    },
-                    {
-                        id: 2,
-                        title: 'Reusable Water Bottle',
-                        description: 'Skip plastic bottles today',
-                        co2Saved: 0.8,
-                        icon: 'bottle',
-                        iconClass: 'fas fa-wine-bottle',
-                        completed: false
-                    },
-                    {
-                        id: 3,
-                        title: 'Turn Off Lights',
-                        description: 'Save energy at home',
-                        co2Saved: 0.4,
-                        icon: 'lights',
-                        iconClass: 'fas fa-lightbulb',
-                        completed: false
-                    }
-                ];
-                this.saveTasks();
-            }
+            // Show error message if JSON loading fails
+            console.error('Please make sure tasksList.json is available and properly formatted');
         }
 
         this.renderTasks();
