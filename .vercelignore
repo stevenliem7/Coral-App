@@ -1,0 +1,19 @@
+node_modules
+.git
+*.log
+package-lock.json
+
+# Large/unused ML assets and scripts
+yolov8n.pt
+yolo_detection_server.py
+requirements.txt
+setup_yolo.py
+start_detection.sh
+__pycache__/
+*.pyc
+
+# Local env files
+.env
+.env.*
+
+

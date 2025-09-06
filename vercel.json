@@ -1,7 +1,7 @@
 {
-  "functions": {
-    "api/opennem.js": {
-      "runtime": "nodejs18.x"
-    }
-  }
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "installCommand": "npm install"
 }
