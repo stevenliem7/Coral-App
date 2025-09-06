@@ -124,9 +124,6 @@ class CoralTodoApp {
         });
 
         // Reset todos button
-        document.getElementById('resetTodosBtn').addEventListener('click', () => {
-            this.resetTodos();
-        });
 
         // Hamburger menu
         document.querySelector('.hamburger-menu').addEventListener('click', () => {
