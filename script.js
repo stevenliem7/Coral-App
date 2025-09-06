@@ -234,10 +234,19 @@ class CoralImpactApp {
             // Set current task for verification
             this.currentVerificationTask = task;
             
-            // Update modal title based on task
+            // Update modal title and description based on task
             const titleElement = document.getElementById('verification-title');
-            if (titleElement) {
-                titleElement.textContent = `📸 Verify: ${task.title}`;
+            const descriptionElement = document.getElementById('verification-description');
+            
+            if (task.verificationTarget === 'bicycle') {
+                if (titleElement) titleElement.textContent = `🚴‍♀️ Verify: ${task.title}`;
+                if (descriptionElement) descriptionElement.textContent = 'Take a photo of a bicycle to complete this sustainable transport goal';
+            } else if (task.verificationTarget === 'recycling_bin') {
+                if (titleElement) titleElement.textContent = `♻️ Verify: ${task.title}`;
+                if (descriptionElement) descriptionElement.textContent = 'Take a photo of any recyclable item (bottle, can, cup, phone, etc.) to complete this goal';
+            } else {
+                if (titleElement) titleElement.textContent = `📸 Verify: ${task.title}`;
+                if (descriptionElement) descriptionElement.textContent = task.description;
             }
             
             cameraModal.style.display = 'flex';
@@ -382,40 +391,180 @@ class CoralImpactApp {
         statusDiv.style.color = '#2196F3';
         
         try {
-            // Mock verification for now - you can integrate with your YOLO server later
-            const mockDetection = {
-                detected: Math.random() > 0.3, // 70% success rate for demo
-                confidence: 0.8 + Math.random() * 0.2,
-                object: task.verificationTarget === 'bicycle' ? 'bicycle' : 'recyclable item'
-            };
+            // REAL AI DETECTION using TensorFlow.js with COCO-SSD model
+            console.log('🤖 Using REAL AI detection with TensorFlow.js...');
             
-            if (mockDetection.detected) {
-                const confidence = Math.round(mockDetection.confidence * 100);
-                statusDiv.innerHTML = `✅ ${mockDetection.object} detected! Confidence: ${confidence}%`;
-                statusDiv.style.color = '#4CAF50';
+            // Load the image into a canvas for TensorFlow processing
+            const img = new Image();
+            img.src = this.capturedImage;
+            
+            await new Promise((resolve, reject) => {
+                img.onload = resolve;
+                img.onerror = reject;
+            });
+
+            // Create a canvas to process the image
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+
+            // Load TensorFlow.js COCO-SSD model if not already loaded
+            if (!window.cocoModel) {
+                statusDiv.innerHTML = '🤖 Loading AI model... (first time only)';
                 
+                // Load TensorFlow.js and COCO-SSD model
+                if (!window.tf) {
+                    await new Promise((resolve) => {
+                        const script1 = document.createElement('script');
+                        script1.src = 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest';
+                        script1.onload = () => {
+                            const script2 = document.createElement('script');
+                            script2.src = 'https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@latest';
+                            script2.onload = resolve;
+                            document.head.appendChild(script2);
+                        };
+                        document.head.appendChild(script1);
+                    });
+                }
+                
+                // Wait for models to be available
+                await new Promise(resolve => {
+                    const checkModels = () => {
+                        if (window.cocoSsd && window.tf) {
+                            resolve();
+                        } else {
+                            setTimeout(checkModels, 100);
+                        }
+                    };
+                    checkModels();
+                });
+                
+                window.cocoModel = await window.cocoSsd.load();
+                console.log('✅ AI Model loaded successfully!');
+            }
+
+            statusDiv.innerHTML = '🔍 AI is analyzing your photo...';
+            
+            // Detect objects in the image
+            const predictions = await window.cocoModel.detect(img);
+            console.log('🔍 AI Predictions:', predictions);
+
+            // Convert to Roboflow-like format
+            const result = {
+                predictions: predictions.map(pred => ({
+                    class: pred.class,
+                    confidence: pred.score,
+                    bbox: pred.bbox
+                }))
+            };
+
+            // Check for target object detection
+            let detected = false;
+            let confidence = 0;
+            let detectedObject = '';
+
+            if (task.verificationTarget === 'bicycle') {
+                // Check for bicycle detection
+                const bicyclePrediction = result.predictions.find(pred =>
+                    pred.class === 'bicycle' && pred.confidence > 0.5
+                );
+                if (bicyclePrediction) {
+                    detected = true;
+                    confidence = bicyclePrediction.confidence;
+                    detectedObject = 'bicycle';
+                }
+            } else if (task.verificationTarget === 'recycling_bin') {
+                // Check for recyclable items - expanded list for better detection
+                const recyclableClasses = [
+                    // Bottles & Containers
+                    'bottle', 'wine glass', 'cup',
+                    // Cans & Metal
+                    'can', 'bowl',
+                    // Electronics
+                    'cell phone', 'laptop', 'keyboard', 'mouse', 'remote', 'tv',
+                    // Paper & Cardboard
+                    'book', 'scissors',
+                    // Plastic items
+                    'toothbrush', 'hair drier'
+                ];
+                
+                const recyclablePrediction = result.predictions.find(pred =>
+                    recyclableClasses.includes(pred.class) && pred.confidence > 0.3
+                );
+                
+                if (recyclablePrediction) {
+                    detected = true;
+                    confidence = recyclablePrediction.confidence;
+                    detectedObject = recyclablePrediction.class;
+                    
+                    // Log what was detected for debugging
+                    console.log('♻️ Recyclable item detected:', {
+                        item: recyclablePrediction.class,
+                        confidence: recyclablePrediction.confidence,
+                        allPredictions: result.predictions.map(p => `${p.class}: ${Math.round(p.confidence * 100)}%`)
+                    });
+                }
+            }
+
+            if (detected) {
+                const confidencePercent = Math.round(confidence * 100);
+                const displayName = task.verificationTarget === 'bicycle' ? 'Bicycle' : `${detectedObject.charAt(0).toUpperCase() + detectedObject.slice(1)} (recyclable)`;
+
+                statusDiv.innerHTML = `✅ ${displayName} detected! Confidence: ${confidencePercent}%`;
+                statusDiv.style.color = '#4CAF50';
+
                 setTimeout(() => {
                     // Complete the task
                     this.toggleTaskCompletion(task.id);
-                    
-                    statusDiv.innerHTML = `�꩸ Task completed! Your coral reef celebrates your sustainable action!`;
-                    
+
+                    statusDiv.innerHTML = `🪸 Task completed! Your coral reef celebrates your sustainable action!`;
+
                     setTimeout(() => {
                         this.closeCameraModal();
                     }, 2000);
                 }, 1000);
-                
+
             } else {
-                statusDiv.innerHTML = `❌ No ${mockDetection.object} detected. Please take a clearer photo.`;
-                statusDiv.style.color = '#f44336';
+                const targetName = task.verificationTarget === 'bicycle' ? 'bicycle' : 'recyclable items';
                 
+                // Show what was actually detected for debugging
+                const detectedItems = result.predictions.map(p => `${p.class} (${Math.round(p.confidence * 100)}%)`).join(', ');
+                
+                statusDiv.innerHTML = `❌ No ${targetName} detected.<br/>
+                    <small style="font-size: 10px; opacity: 0.8;">
+                        ${detectedItems ? `Found: ${detectedItems}` : 'No objects detected'}
+                    </small>`;
+                statusDiv.style.color = '#f44336';
+                statusDiv.style.fontSize = '12px';
+
+                console.log('🔍 Detection failed. Found objects:', result.predictions);
+
                 setTimeout(() => {
                     this.retakePhoto();
-                }, 2000);
+                }, 3000); // Give more time to read the debug info
             }
         } catch (error) {
-            statusDiv.innerHTML = '⚠️ Verification failed. Please try again.';
-            statusDiv.style.color = '#FF9800';
+            console.error('🚨 REAL AI DETECTION FAILED:', error);
+            statusDiv.innerHTML = `🚨 AI Detection Failed: ${error.message}<br/>Check console for details.`;
+            statusDiv.style.color = '#ff0000';
+            statusDiv.style.fontSize = '12px';
+            
+            // Show detailed error info
+            console.log('🔍 TensorFlow.js Error Details:', {
+                error: error.message,
+                task: task.verificationTarget,
+                imageLength: this.capturedImage ? this.capturedImage.length : 'null',
+                tfLoaded: !!window.tf,
+                cocoSsdLoaded: !!window.cocoSsd,
+                modelLoaded: !!window.cocoModel
+            });
+            
+            // Auto-retry after showing error
+            setTimeout(() => {
+                this.retakePhoto();
+            }, 3000);
         }
     }
 
