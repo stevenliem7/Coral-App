@@ -109,4 +109,4 @@ This project is open source and available under the MIT License.
 **Made with ❤️ for marine conservation and coral reef enthusiasts**
 
 here's the link:
-https://coralapp-sandy.vercel.app/
+https://coral-app.vercel.app/
