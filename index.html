@@ -60,8 +60,8 @@
                         </div>
                     </div>
                     <div class="impact-text">
-                        <div class="impact-percentage">25%</div>
-                        <div class="impact-label">Daily Goal</div>
+                        <div class="impact-percentage">0%</div>
+                        <div class="impact-label">2.5kg CO₂ Goal</div>
                     </div>
                 </div>
             </section>
@@ -70,11 +70,11 @@
             <section class="stats-section">
                 <div class="stats-grid">
                     <div class="stat-card co2-saved">
-                        <div class="stat-value">2.4kg</div>
+                        <div class="stat-value">0.0kg</div>
                         <div class="stat-label">CO₂ Saved Today</div>
                     </div>
                     <div class="stat-card day-streak">
-                        <div class="stat-value">7</div>
+                        <div class="stat-value">🔥 1</div>
                         <div class="stat-label">Day Streak</div>
                     </div>
                 </div>
@@ -139,16 +139,27 @@
             updateCoralDisplay();
         }
 
+        // Make coral functions globally available
+        window.setCoralPoints = setCoralPoints;
+        window.updateCoralDisplay = updateCoralDisplay;
+
         function updateCoralDisplay() {
-            const growthPercent = Math.round((coralTargetPoints / coralMaxPoints) * 100);
-            
+            // Use CO₂-based calculation instead of coral points
+            const dailyGoal = 2.5; // Match the script.js goal
+            const co2Saved = parseFloat(document.querySelector('.co2-saved .stat-value')?.textContent?.replace('kg', '') || '0');
+            const growthPercent = Math.round((co2Saved / dailyGoal) * 100);
+
             // Update the percentage display
             document.querySelector('.impact-percentage').textContent = growthPercent + '%';
-            
+
             // Update progress ring
             const circumference = 565.48;
-            const offset = circumference - (coralTargetPoints / coralMaxPoints) * circumference;
+            const offset = circumference - (growthPercent / 100) * circumference;
             document.querySelector('.progress-ring-circle').style.strokeDashoffset = offset;
+
+            // Update coral target points for animation
+            const targetPoints = Math.floor((co2Saved / dailyGoal) * coralMaxPoints);
+            coralTargetPoints = Math.max(0, Math.min(targetPoints, coralMaxPoints));
         }
 
         function coralGrowthToColor(g) {
@@ -194,7 +205,7 @@
             noiseSeed(coralSeed);
             randomSeed(coralSeed);
             
-            setCoralPoints(5); // Start with bleached coral
+            setCoralPoints(0); // Start with no progress today
         }
 
         function draw() {
@@ -531,152 +542,6 @@
                     object: 'error',
                     error: 'Detection server unavailable. Please start the YOLOv8 server.'
                 };
-            }
-        }
-
-        // Open camera for verification
-        async function openCameraVerification(taskId, taskTitle) {
-            currentTaskId = taskId;
-            document.getElementById('verification-title').textContent = `📸 Verify: ${taskTitle}`;
-            document.getElementById('camera-modal').style.display = 'flex';
-            
-            try {
-                currentStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { 
-                        facingMode: 'environment', // Use back camera on mobile
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    } 
-                });
-                document.getElementById('camera-video').srcObject = currentStream;
-            } catch (error) {
-                alert('Camera access denied. Please allow camera access to verify tasks.');
-                closeCameraModal();
-            }
-        }
-
-        // Capture photo
-        document.getElementById('capture-btn').addEventListener('click', function() {
-            const video = document.getElementById('camera-video');
-            const canvas = document.getElementById('camera-canvas');
-            const ctx = canvas.getContext('2d');
-            
-            // Set canvas size to match display size, not video resolution
-            const displayWidth = 400;
-            const displayHeight = (video.videoHeight / video.videoWidth) * displayWidth;
-            
-            canvas.width = displayWidth;
-            canvas.height = displayHeight;
-            canvas.style.width = displayWidth + 'px';
-            canvas.style.height = displayHeight + 'px';
-            
-            ctx.drawImage(video, 0, 0, displayWidth, displayHeight);
-            
-            capturedImage = canvas.toDataURL('image/jpeg', 0.8);
-            
-            // Show captured image
-            video.style.display = 'none';
-            canvas.style.display = 'block';
-            
-            // Update buttons
-            document.getElementById('capture-btn').style.display = 'none';
-            document.getElementById('verify-btn').style.display = 'inline-block';
-            document.getElementById('retake-btn').style.display = 'inline-block';
-        });
-
-        // Retake photo
-        document.getElementById('retake-btn').addEventListener('click', function() {
-            const video = document.getElementById('camera-video');
-            const canvas = document.getElementById('camera-canvas');
-            
-            video.style.display = 'block';
-            canvas.style.display = 'none';
-            
-            document.getElementById('capture-btn').style.display = 'inline-block';
-            document.getElementById('verify-btn').style.display = 'none';
-            document.getElementById('retake-btn').style.display = 'none';
-            document.getElementById('verification-status').textContent = '';
-        });
-
-        // Verify and complete task
-        document.getElementById('verify-btn').addEventListener('click', async function() {
-            const statusDiv = document.getElementById('verification-status');
-            statusDiv.innerHTML = '🔍 Analyzing image for bicycle...';
-            statusDiv.style.color = '#2196F3';
-            
-            try {
-                const detection = await detectBicycle(capturedImage);
-                
-                if (detection.error) {
-                    statusDiv.innerHTML = `⚠️ ${detection.error}`;
-                    statusDiv.style.color = '#FF9800';
-                    return;
-                }
-                
-                if (detection.detected) {
-                    statusDiv.innerHTML = `✅ Bicycle detected! Confidence: ${Math.round(detection.confidence * 100)}%`;
-                    statusDiv.style.color = '#4CAF50';
-                    
-                    // Award points and update coral
-                    const taskPoints = 150; // Bike task points
-                    const bonusPoints = Math.floor(detection.confidence * 20); // Confidence bonus
-                    const totalPoints = taskPoints + bonusPoints;
-                    
-                    setTimeout(() => {
-                        // Update coral growth
-                        setCoralPoints(coralPoints + totalPoints);
-                        
-                        // Show success message
-                        statusDiv.innerHTML = `🪸 Task completed! +${totalPoints} points! Your coral reef celebrates sustainable transport!`;
-                        
-                        // Close modal after success
-                        setTimeout(() => {
-                            closeCameraModal();
-                        }, 3000);
-                    }, 1000);
-                    
-                } else {
-                    statusDiv.innerHTML = '❌ No bicycle detected. Please take a clearer photo of a bicycle.';
-                    statusDiv.style.color = '#f44336';
-                    
-                    // Reset for retry
-                    setTimeout(() => {
-                        document.getElementById('retake-btn').click();
-                    }, 2000);
-                }
-            } catch (error) {
-                statusDiv.innerHTML = '⚠️ Verification failed. Please try again.';
-                statusDiv.style.color = '#FF9800';
-            }
-        });
-
-        // Cancel camera
-        document.getElementById('cancel-camera-btn').addEventListener('click', closeCameraModal);
-
-        function closeCameraModal() {
-            if (currentStream) {
-                currentStream.getTracks().forEach(track => track.stop());
-                currentStream = null;
-            }
-            
-            document.getElementById('camera-modal').style.display = 'none';
-            document.getElementById('camera-video').style.display = 'block';
-            document.getElementById('camera-canvas').style.display = 'none';
-            document.getElementById('capture-btn').style.display = 'inline-block';
-            document.getElementById('verify-btn').style.display = 'none';
-            document.getElementById('retake-btn').style.display = 'none';
-            document.getElementById('verification-status').textContent = '';
-            capturedImage = null;
-            currentTaskId = null;
-        }
-
-        // Add camera verification to task completion
-        function completeTaskWithVerification(taskId, taskTitle, hasVerification) {
-            if (hasVerification) {
-                openCameraVerification(taskId, taskTitle);
-            } else {
-                // Regular task completion
-                setCoralPoints(coralPoints + 50); // Default points
             }
         }
 

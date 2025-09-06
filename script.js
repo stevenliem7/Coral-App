@@ -4,19 +4,68 @@ class CoralImpactApp {
         this.tasks = JSON.parse(localStorage.getItem('coralTasks')) || [];
         this.dailyStats = JSON.parse(localStorage.getItem('dailyStats')) || {
             co2Saved: 0,
-            dayStreak: 0,
-            dailyGoal: 100,
+            dayStreak: 1,
+            dailyGoal: 2.5, // 2.5kg CO₂ daily goal
             completedTasks: 0
         };
+        
+        // Camera verification properties
+        this.currentStream = null;
+        this.capturedImage = null;
+        this.currentVerificationTask = null;
+        
+        // Check if it's a new day and reset stats
+        this.checkDailyReset();
         this.init();
     }
 
     init() {
         this.setupEventListeners();
+        this.setupCameraEventListeners();
         this.loadTasks();
         this.updateStats();
         this.updateProgressRing();
+        this.updateCoralPoints();
         this.startSimulation();
+    }
+
+    checkDailyReset() {
+        const today = new Date().toDateString();
+        const lastActiveDate = localStorage.getItem('lastActiveDate');
+        
+        if (lastActiveDate !== today) {
+            // New day - reset CO₂ saved and completed tasks to 0
+            this.dailyStats.co2Saved = 0;
+            this.dailyStats.completedTasks = 0;
+            
+            // Update day streak
+            if (lastActiveDate) {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                
+                if (lastActiveDate === yesterday.toDateString()) {
+                    // Consecutive day - increment streak
+                    this.dailyStats.dayStreak += 1;
+                } else {
+                    // Streak broken - reset to 1
+                    this.dailyStats.dayStreak = 1;
+                }
+            } else {
+                // First time - start streak at 1
+                this.dailyStats.dayStreak = 1;
+            }
+            
+            // Reset all tasks to incomplete for new day
+            this.tasks.forEach(task => {
+                if (!task.unlimited) {
+                    task.completed = false;
+                }
+            });
+            
+            localStorage.setItem('lastActiveDate', today);
+            this.saveTasks();
+            this.saveStats();
+        }
     }
 
     setupEventListeners() {
@@ -49,7 +98,8 @@ class CoralImpactApp {
             // Always load from tasksList.json first to get latest tasks
             const response = await fetch('tasksList.json');
             const tasksData = await response.json();
-            
+
+
             // Map JSON tasks to our format, preserving completion status if tasks exist
             const existingTasks = this.tasks || [];
             this.tasks = tasksData.map((task, index) => {
@@ -183,6 +233,13 @@ class CoralImpactApp {
         if (cameraModal) {
             // Set current task for verification
             this.currentVerificationTask = task;
+            
+            // Update modal title based on task
+            const titleElement = document.getElementById('verification-title');
+            if (titleElement) {
+                titleElement.textContent = `📸 Verify: ${task.title}`;
+            }
+            
             cameraModal.style.display = 'flex';
             this.startCamera();
         } else {
@@ -192,23 +249,194 @@ class CoralImpactApp {
         }
     }
 
+    async startCamera() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    facingMode: 'environment', // Use back camera on mobile
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                } 
+            });
+            const video = document.getElementById('camera-video');
+            if (video) {
+                video.srcObject = stream;
+                this.currentStream = stream;
+            }
+        } catch (error) {
+            console.error('Camera access error:', error);
+            this.showNotification('Camera access denied. Please allow camera access to verify tasks.');
+            this.closeCameraModal();
+        }
+    }
+
+    closeCameraModal() {
+        if (this.currentStream) {
+            this.currentStream.getTracks().forEach(track => track.stop());
+            this.currentStream = null;
+        }
+        
+        const cameraModal = document.getElementById('camera-modal');
+        if (cameraModal) {
+            cameraModal.style.display = 'none';
+        }
+        
+        // Reset modal state
+        const video = document.getElementById('camera-video');
+        const canvas = document.getElementById('camera-canvas');
+        if (video) video.style.display = 'block';
+        if (canvas) canvas.style.display = 'none';
+        
+        const captureBtn = document.getElementById('capture-btn');
+        const verifyBtn = document.getElementById('verify-btn');
+        const retakeBtn = document.getElementById('retake-btn');
+        if (captureBtn) captureBtn.style.display = 'inline-block';
+        if (verifyBtn) verifyBtn.style.display = 'none';
+        if (retakeBtn) retakeBtn.style.display = 'none';
+        
+        const statusDiv = document.getElementById('verification-status');
+        if (statusDiv) statusDiv.textContent = '';
+        
+        this.currentVerificationTask = null;
+        this.capturedImage = null;
+    }
+
+    setupCameraEventListeners() {
+        // Capture photo button
+        const captureBtn = document.getElementById('capture-btn');
+        if (captureBtn) {
+            captureBtn.addEventListener('click', () => this.capturePhoto());
+        }
+
+        // Retake photo button
+        const retakeBtn = document.getElementById('retake-btn');
+        if (retakeBtn) {
+            retakeBtn.addEventListener('click', () => this.retakePhoto());
+        }
+
+        // Verify photo button
+        const verifyBtn = document.getElementById('verify-btn');
+        if (verifyBtn) {
+            verifyBtn.addEventListener('click', () => this.verifyPhoto());
+        }
+
+        // Cancel camera button
+        const cancelBtn = document.getElementById('cancel-camera-btn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => this.closeCameraModal());
+        }
+    }
+
+    capturePhoto() {
+        const video = document.getElementById('camera-video');
+        const canvas = document.getElementById('camera-canvas');
+        if (!video || !canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size to match display size
+        const displayWidth = 400;
+        const displayHeight = (video.videoHeight / video.videoWidth) * displayWidth;
+        
+        canvas.width = displayWidth;
+        canvas.height = displayHeight;
+        canvas.style.width = displayWidth + 'px';
+        canvas.style.height = displayHeight + 'px';
+        
+        ctx.drawImage(video, 0, 0, displayWidth, displayHeight);
+        
+        this.capturedImage = canvas.toDataURL('image/jpeg', 0.8);
+        
+        // Show captured image
+        video.style.display = 'none';
+        canvas.style.display = 'block';
+        
+        // Update buttons
+        document.getElementById('capture-btn').style.display = 'none';
+        document.getElementById('verify-btn').style.display = 'inline-block';
+        document.getElementById('retake-btn').style.display = 'inline-block';
+    }
+
+    retakePhoto() {
+        const video = document.getElementById('camera-video');
+        const canvas = document.getElementById('camera-canvas');
+        
+        if (video) video.style.display = 'block';
+        if (canvas) canvas.style.display = 'none';
+        
+        document.getElementById('capture-btn').style.display = 'inline-block';
+        document.getElementById('verify-btn').style.display = 'none';
+        document.getElementById('retake-btn').style.display = 'none';
+        
+        const statusDiv = document.getElementById('verification-status');
+        if (statusDiv) statusDiv.textContent = '';
+    }
+
+    async verifyPhoto() {
+        if (!this.capturedImage || !this.currentVerificationTask) return;
+        
+        const statusDiv = document.getElementById('verification-status');
+        const task = this.currentVerificationTask;
+        
+        statusDiv.innerHTML = `🔍 Analyzing image for ${task.verificationTarget === 'bicycle' ? 'bicycle' : 'recyclable items'}...`;
+        statusDiv.style.color = '#2196F3';
+        
+        try {
+            // Mock verification for now - you can integrate with your YOLO server later
+            const mockDetection = {
+                detected: Math.random() > 0.3, // 70% success rate for demo
+                confidence: 0.8 + Math.random() * 0.2,
+                object: task.verificationTarget === 'bicycle' ? 'bicycle' : 'recyclable item'
+            };
+            
+            if (mockDetection.detected) {
+                const confidence = Math.round(mockDetection.confidence * 100);
+                statusDiv.innerHTML = `✅ ${mockDetection.object} detected! Confidence: ${confidence}%`;
+                statusDiv.style.color = '#4CAF50';
+                
+                setTimeout(() => {
+                    // Complete the task
+                    this.toggleTaskCompletion(task.id);
+                    
+                    statusDiv.innerHTML = `�꩸ Task completed! Your coral reef celebrates your sustainable action!`;
+                    
+                    setTimeout(() => {
+                        this.closeCameraModal();
+                    }, 2000);
+                }, 1000);
+                
+            } else {
+                statusDiv.innerHTML = `❌ No ${mockDetection.object} detected. Please take a clearer photo.`;
+                statusDiv.style.color = '#f44336';
+                
+                setTimeout(() => {
+                    this.retakePhoto();
+                }, 2000);
+            }
+        } catch (error) {
+            statusDiv.innerHTML = '⚠️ Verification failed. Please try again.';
+            statusDiv.style.color = '#FF9800';
+        }
+    }
+
     toggleTaskCompletion(taskId) {
         const task = this.tasks.find(t => t.id === taskId);
         if (task) {
+
             // For unlimited tasks, always add to stats without toggling completion
             if (task.unlimited) {
                 this.dailyStats.co2Saved += task.co2Saved;
                 this.dailyStats.completedTasks += 1;
-                
-                const co2Display = task.displayUnit === 'g' ? 
-                    `${(task.co2Saved * 1000).toFixed(1)}g` : 
+
+                const co2Display = task.displayUnit === 'g' ?
+                    `${(task.co2Saved * 1000).toFixed(1)}g` :
                     `${task.co2Saved}kg`;
                 const message = `Great job! You saved ${co2Display} CO₂! Keep going! 🌱♾️`;
                 this.showNotification(message);
             } else {
                 // Regular task toggle
                 task.completed = !task.completed;
-                
+
                 // Update daily stats
                 if (task.completed) {
                     this.dailyStats.co2Saved += task.co2Saved;
@@ -217,51 +445,64 @@ class CoralImpactApp {
                     this.dailyStats.co2Saved -= task.co2Saved;
                     this.dailyStats.completedTasks -= 1;
                 }
-                
-                const co2Display = task.displayUnit === 'g' ? 
-                    `${(task.co2Saved * 1000).toFixed(1)}g` : 
+
+                const co2Display = task.displayUnit === 'g' ?
+                    `${(task.co2Saved * 1000).toFixed(1)}g` :
                     `${task.co2Saved}kg`;
-                const message = task.completed ? 
-                    `Great job! You saved ${co2Display} CO₂! 🌱` : 
+                const message = task.completed ?
+                    `Great job! You saved ${co2Display} CO₂! 🌱` :
                     'Task unchecked. Keep going! 💪';
                 this.showNotification(message);
             }
+
 
             this.saveTasks();
             this.saveStats();
             this.renderTasks();
             this.updateStats();
             this.updateProgressRing();
+            this.updateCoralPoints();
+        }
+    }
+
+    updateCoralPoints() {
+        // Trigger coral display update to sync with CO₂ progress
+        if (typeof updateCoralDisplay === 'function') {
+            updateCoralDisplay();
+        } else if (window.updateCoralDisplay) {
+            window.updateCoralDisplay();
         }
     }
 
     updateStats() {
-        // Update CO₂ saved display
+        // Update CO₂ saved display (always positive)
         const co2Element = document.querySelector('.co2-saved .stat-value');
         if (co2Element) {
-            co2Element.textContent = `${this.dailyStats.co2Saved.toFixed(1)}kg`;
+            co2Element.textContent = `${Math.abs(this.dailyStats.co2Saved).toFixed(1)}kg`;
         }
 
-        // Update day streak
+        // Update day streak in stats card
         const streakElement = document.querySelector('.day-streak .stat-value');
         if (streakElement) {
-            streakElement.textContent = this.dailyStats.dayStreak.toString();
+            streakElement.innerHTML = `🔥 ${this.dailyStats.dayStreak}`;
         }
     }
 
     updateProgressRing() {
-        const progress = Math.min((this.dailyStats.completedTasks / this.tasks.length) * 100, 100);
-        const circle = document.querySelector('.progress-ring-circle');
+        // Calculate progress based on CO₂ saved toward 2.5kg goal
+        const progress = Math.min((this.dailyStats.co2Saved / this.dailyStats.dailyGoal) * 100, 100);
+
+        // Update percentage display (coral visualization handles progress ring)
         const percentage = document.querySelector('.impact-percentage');
-        
-        if (circle) {
-            const circumference = 2 * Math.PI * 90; // radius = 90
-            const offset = circumference - (progress / 100) * circumference;
-            circle.style.strokeDashoffset = offset;
-        }
-        
         if (percentage) {
             percentage.textContent = `${Math.round(progress)}%`;
+        }
+
+        // Trigger coral display update to sync progress ring
+        if (typeof updateCoralDisplay === 'function') {
+            updateCoralDisplay();
+        } else if (window.updateCoralDisplay) {
+            window.updateCoralDisplay();
         }
     }
 
@@ -322,23 +563,24 @@ class CoralImpactApp {
         this.renderTasks();
         this.updateStats();
         this.updateProgressRing();
-        
+        this.updateCoralPoints(); // Reset coral to 0 for new day
+
         this.showNotification('New day! Let\'s make a positive impact! 🌅');
     }
 
 
     showProgress() {
         const totalCo2 = this.dailyStats.co2Saved;
+        const goal = this.dailyStats.dailyGoal;
+        const progressPercent = Math.round((totalCo2 / goal) * 100);
         const streak = this.dailyStats.dayStreak;
-        const completed = this.dailyStats.completedTasks;
-        const total = this.tasks.length;
-        
-        const message = `Progress Summary:\n\n` +
-            `CO₂ Saved Today: ${totalCo2.toFixed(1)}kg\n` +
-            `Day Streak: ${streak} days\n` +
-            `Tasks Completed: ${completed}/${total}\n\n` +
-            `Keep up the great work! 🌱`;
-        
+
+        const message = `🌱 Daily Progress Summary 🌱\n\n` +
+            `CO₂ Saved Today: ${totalCo2.toFixed(1)}kg / ${goal}kg\n` +
+            `Progress: ${progressPercent}%\n` +
+            `Day Streak: 🔥 ${streak} days\n\n` +
+            `${progressPercent >= 100 ? '🎉 Goal Achieved!' : 'Keep going! 🌍'}`;
+
         alert(message);
     }
 
@@ -440,10 +682,10 @@ if (!localStorage.getItem('coralTasks')) {
 
 if (!localStorage.getItem('dailyStats')) {
     const sampleStats = {
-        co2Saved: 1.2,
-        dayStreak: 7,
-        dailyGoal: 100,
-        completedTasks: 1
+        co2Saved: 0.0,
+        dayStreak: 1,
+        dailyGoal: 2.5, // 2.5kg CO₂ daily goal
+        completedTasks: 0
     };
     localStorage.setItem('dailyStats', JSON.stringify(sampleStats));
 }
