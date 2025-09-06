@@ -1,6 +1,6 @@
 {
   "name": "coral-collective",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CoralCollective - Visualising Small Actions as Ecosystem Growth",
   "scripts": {
     "dev": "next dev",
