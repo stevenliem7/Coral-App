@@ -503,6 +503,45 @@
         </div>
     </div>
 
+    <!-- Carbon Intensity Modal -->
+    <div id="carbon-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 20px; border-radius: 15px; text-align: center; max-width: 90%; max-height: 90%;">
+            <h3 id="carbon-title">⚡ Carbon Intensity Check</h3>
+            <p id="carbon-description">Checking Australian electricity grid carbon intensity...</p>
+            
+            <div id="carbon-status" style="margin: 20px 0; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 18px;">
+                🔄 Loading grid data...
+            </div>
+            
+            <div id="carbon-details" style="margin: 15px 0; font-size: 14px; color: #666;">
+                <!-- Details will be populated by JavaScript -->
+            </div>
+            
+            <div id="carbon-renewable-bar" style="margin: 15px 0; background: #eee; height: 20px; border-radius: 10px; overflow: hidden; display: none;">
+                <div id="carbon-renewable-fill" style="height: 100%; background: linear-gradient(90deg, #4CAF50, #8BC34A); transition: width 0.5s;"></div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <button id="carbon-complete-btn" style="display: none; background: #4CAF50; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; margin: 5px; cursor: pointer;">
+                    ✅ Complete Task
+                </button>
+                <button id="carbon-half-btn" style="display: none; background: #FF9800; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; margin: 5px; cursor: pointer;">
+                    ⚡ Complete for Half Points
+                </button>
+                <button id="carbon-wait-btn" style="display: none; background: #2196F3; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; margin: 5px; cursor: pointer;">
+                    ⏰ Check Again Later
+                </button>
+                <button id="carbon-cancel-btn" style="background: #f44336; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; margin: 5px; cursor: pointer;">
+                    ❌ Cancel
+                </button>
+            </div>
+            
+            <div id="carbon-next-check" style="margin-top: 10px; font-size: 12px; color: #999;">
+                <!-- Next good time will be shown here -->
+            </div>
+        </div>
+    </div>
+
     <script>
         // Camera verification functionality
         let currentStream = null;

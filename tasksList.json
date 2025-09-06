@@ -21,11 +21,11 @@
   },
   {
     "title": "Watt's the Right Time?",
-    "description": "Use electricity at an eco-friendly time",
+    "description": "Use electricity only when carbon intensity is low for full points!",
     "points": 100,
     "category": "Energy",
     "carbonSavingKg": 0.8,
-    "verification": "screenshot",
-    "verificationTarget": "energy_app"
+    "verification": "carbon_intensity",
+    "verificationTarget": "low_carbon"
   }
 ]
