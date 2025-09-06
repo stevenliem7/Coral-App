@@ -16,6 +16,11 @@
       "static/chunks/main-app.js",
       "static/chunks/app/api/activities/route.js"
     ],
+    "/api/opennem/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/opennem/route.js"
+    ],
     "/community/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",

@@ -154,9 +154,256 @@ body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
+/* Impact Display */
+.impact-display {
+    margin-bottom: 30px;
+}
+
+.impact-circle {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-ring {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.impact-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 156px;
+    height: 156px;
+    z-index: 10;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+#coral-container {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.impact-text {
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 8px;
+    padding-bottom: 24px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.impact-percentage {
+    font-size: 48px;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1;
+}
+
+.impact-label {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 8px;
+}
+
+/* Statistics Section */
+.stats-section {
+    margin-bottom: 30px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    color: white;
+}
+
+.co2-saved .stat-value {
+    color: white;
+}
+
+.day-streak .stat-value {
+    color: white;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 8px;
+}
+
 /* Tasks Section */
 .tasks-section {
     margin-bottom: 30px;
+}
+
+/* Task Cards */
+.task-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+}
+
+.task-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    background: #f8f9fa;
+}
+
+.task-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: white;
+    flex-shrink: 0;
+}
+
+.task-icon.bike {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.task-icon.recycle {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.task-icon.energy {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.task-icon.general {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+}
+
+.task-content {
+    flex: 1;
+}
+
+.task-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: black;
+    margin-bottom: 4px;
+}
+
+.task-description {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.4;
+}
+
+.task-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.task-co2 {
+    font-size: 12px;
+    color: #4ade80;
+    font-weight: 600;
+    background: rgba(74, 222, 128, 0.2);
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.task-status {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.task-status:hover {
+    border-color: #4ade80;
+    color: #4ade80;
+    transform: scale(1.1);
+}
+
+.task-status.completed {
+    background: #4ade80;
+    border-color: #4ade80;
+    color: white;
+}
+
+.task-status.completed:hover {
+    background: #22c55e;
+    border-color: #22c55e;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.view-all {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.view-all:hover {
+    color: white;
 }
 
 .tasks-header {
