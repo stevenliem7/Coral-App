@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coral - Todo List</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="hamburger-menu">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="logo">
+                    <h1>Coral</h1>
+                    <p class="subtitle">Todo List</p>
+                </div>
+                <div class="user-profile">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Todo List Header -->
+            <section class="todo-header">
+                <div class="todo-title">
+                    <h2>ToDo List Title</h2>
+                    <p class="todo-description">ToDo List Description</p>
+                </div>
+            </section>
+
+            <!-- Add New Todo -->
+            <section class="add-todo-section">
+                <div class="add-todo-form">
+                    <input type="text" id="newTodoInput" placeholder="Add a new todo..." class="todo-input">
+                    <button id="addTodoBtn" class="add-todo-btn">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div class="reset-todo-section">
+                    <button id="resetTodosBtn" class="reset-todos-btn">
+                        <i class="fas fa-refresh"></i>
+                        Reset to Default Tasks
+                    </button>
+                </div>
+            </section>
+
+            <!-- Section Title -->
+            <section class="section-title">
+                <h3>Section/Context title</h3>
+            </section>
+
+            <!-- Todo List -->
+            <section class="todo-list-section">
+                <div class="todo-list" id="todoList">
+                    <!-- Todo items will be dynamically added here -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="todo.html" class="nav-item active">
+                <i class="fas fa-leaf"></i>
+                <span>Tasks</span>
+            </a>
+            <a href="progress.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Progress</span>
+            </a>
+            <a href="community.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>Community</span>
+            </a>
+        </nav>
+    </div>
+
+    <script src="todo-script.js"></script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coral - Community Leaderboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="hamburger-menu">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="logo">
+                    <h1>Coral</h1>
+                    <p class="subtitle">Community Leaderboard</p>
+                </div>
+                <div class="user-profile">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Community Stats -->
+            <section class="community-stats">
+                <div class="stats-grid">
+                    <div class="stat-card community-impact">
+                        <div class="stat-value">1,247kg</div>
+                        <div class="stat-label">Total CO₂ Saved</div>
+                    </div>
+                    <div class="stat-card community-members">
+                        <div class="stat-value">342</div>
+                        <div class="stat-label">Active Members</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Location Filter -->
+            <section class="location-filter">
+                <div class="filter-header">
+                    <h3>Your Local Community</h3>
+                    <div class="location-selector">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span id="currentLocation">San Francisco, CA</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Leaderboard -->
+            <section class="leaderboard-section">
+                <div class="section-header">
+                    <h2>Top Contributors</h2>
+                    <div class="time-filter">
+                        <button class="filter-btn active" data-period="week">Week</button>
+                        <button class="filter-btn" data-period="month">Month</button>
+                        <button class="filter-btn" data-period="all">All Time</button>
+                    </div>
+                </div>
+                
+                <div class="leaderboard" id="leaderboard">
+                    <!-- Leaderboard entries will be dynamically added here -->
+                </div>
+            </section>
+
+            <!-- Community Challenges -->
+            <section class="challenges-section">
+                <div class="section-header">
+                    <h2>Community Challenges</h2>
+                </div>
+                <div class="challenges-grid">
+                    <div class="challenge-card">
+                        <div class="challenge-icon">
+                            <i class="fas fa-bicycle"></i>
+                        </div>
+                        <div class="challenge-content">
+                            <h3>Bike to Work Week</h3>
+                            <p>Join 127 others in cycling to work this week</p>
+                            <div class="challenge-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 68%"></div>
+                                </div>
+                                <span class="progress-text">68% Complete</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="challenge-card">
+                        <div class="challenge-icon">
+                            <i class="fas fa-recycle"></i>
+                        </div>
+                        <div class="challenge-content">
+                            <h3>Zero Waste Challenge</h3>
+                            <p>Reduce waste with 89 community members</p>
+                            <div class="challenge-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 45%"></div>
+                                </div>
+                                <span class="progress-text">45% Complete</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="todo.html" class="nav-item">
+                <i class="fas fa-leaf"></i>
+                <span>Tasks</span>
+            </a>
+            <a href="progress.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Progress</span>
+            </a>
+            <a href="community.html" class="nav-item active">
+                <i class="fas fa-users"></i>
+                <span>Community</span>
+            </a>
+        </nav>
+    </div>
+
+    <script src="community-script.js"></script>
+</body>
+</html>

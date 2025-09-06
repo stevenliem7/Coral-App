@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coral - Progress & Analytics</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="hamburger-menu">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="logo">
+                    <h1>Coral</h1>
+                    <p class="subtitle">Progress & Analytics</p>
+                </div>
+                <div class="user-profile">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Progress Overview -->
+            <section class="progress-overview">
+                <div class="overview-cards">
+                    <div class="overview-card total-co2">
+                        <div class="card-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value" id="totalCo2Saved">0.0kg</div>
+                            <div class="card-label">Total CO₂ Saved</div>
+                        </div>
+                    </div>
+                    <div class="overview-card total-tasks">
+                        <div class="card-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value" id="totalTasksCompleted">0</div>
+                            <div class="card-label">Tasks Completed</div>
+                        </div>
+                    </div>
+                    <div class="overview-card current-streak">
+                        <div class="card-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value" id="currentStreak">0</div>
+                            <div class="card-label">Day Streak</div>
+                        </div>
+                    </div>
+                    <div class="overview-card weekly-goal">
+                        <div class="card-icon">
+                            <i class="fas fa-target"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value" id="weeklyProgress">0%</div>
+                            <div class="card-label">Weekly Goal</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="section-header">
+                    <h2>Progress Analytics</h2>
+                    <div class="chart-controls">
+                        <button class="chart-btn active" data-period="week">Week</button>
+                        <button class="chart-btn" data-period="month">Month</button>
+                        <button class="chart-btn" data-period="year">Year</button>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="co2Chart"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="tasksChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Task Categories -->
+            <section class="categories-section">
+                <div class="section-header">
+                    <h2>Task Categories</h2>
+                </div>
+                <div class="categories-grid" id="categoriesGrid">
+                    <!-- Categories will be dynamically added here -->
+                </div>
+            </section>
+
+            <!-- Recent Activity -->
+            <section class="activity-section">
+                <div class="section-header">
+                    <h2>Recent Activity</h2>
+                    <button class="view-all" id="viewAllActivity">View All</button>
+                </div>
+                <div class="activity-list" id="activityList">
+                    <!-- Activity items will be dynamically added here -->
+                </div>
+            </section>
+
+            <!-- Achievements -->
+            <section class="achievements-section">
+                <div class="section-header">
+                    <h2>Achievements</h2>
+                </div>
+                <div class="achievements-grid" id="achievementsGrid">
+                    <!-- Achievements will be dynamically added here -->
+                </div>
+            </section>
+
+            <!-- Task Management -->
+            <section class="task-management-section">
+                <div class="section-header">
+                    <h2>Task Management</h2>
+                    <button class="add-task-btn" id="addTaskBtn">
+                        <i class="fas fa-plus"></i>
+                        Add Task
+                    </button>
+                </div>
+                <div class="task-filters">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="unfinished">Unfinished</button>
+                    <button class="filter-btn" data-filter="in-progress">In Progress</button>
+                    <button class="filter-btn" data-filter="completed">Completed</button>
+                </div>
+                <div class="tasks-list" id="progressTasksList">
+                    <!-- Tasks will be dynamically added here -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="todo.html" class="nav-item">
+                <i class="fas fa-leaf"></i>
+                <span>Tasks</span>
+            </a>
+            <a href="progress.html" class="nav-item active">
+                <i class="fas fa-chart-line"></i>
+                <span>Progress</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>Community</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div class="modal-overlay" id="addTaskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Task</h3>
+                <button class="close-modal" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addTaskForm">
+                    <div class="form-group">
+                        <label for="taskTitle">Task Title</label>
+                        <input type="text" id="taskTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDescription">Description</label>
+                        <textarea id="taskDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskCategory">Category</label>
+                        <select id="taskCategory" required>
+                            <option value="Energy">Energy</option>
+                            <option value="Waste">Waste</option>
+                            <option value="Transport">Transport</option>
+                            <option value="Water">Water</option>
+                            <option value="Food">Food</option>
+                            <option value="Nature">Nature</option>
+                            <option value="Community">Community</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="taskPoints">Points</label>
+                            <input type="number" id="taskPoints" min="1" max="500" value="10">
+                        </div>
+                        <div class="form-group">
+                            <label for="taskCarbonSaving">CO₂ Saving (kg)</label>
+                            <input type="number" id="taskCarbonSaving" min="0" step="0.1" value="0.1">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskPriority">Priority</label>
+                        <select id="taskPriority">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelTask">Cancel</button>
+                <button class="btn-primary" id="saveTask">Save Task</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="progress-script.js"></script>
+</body>
+</html>

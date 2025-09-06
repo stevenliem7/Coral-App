@@ -21,62 +21,6 @@
     "carbonSavingKg": 0.1
   },
   {
-    "title": "Unplug devices when not in use",
-    "description": "Prevent energy waste by unplugging chargers and appliances.",
-    "points": 8,
-    "category": "Energy",
-    "carbonSavingKg": 0.08
-  },
-  {
-    "title": "Bring a reusable shopping bag",
-    "description": "Avoid single-use plastic bags while shopping.",
-    "points": 2,
-    "category": "Waste",
-    "carbonSavingKg": 0.02
-  },
-  {
-    "title": "Recycle correctly",
-    "description": "Sort plastic, glass, and paper into the correct recycling bins.",
-    "points": 15,
-    "category": "Waste",
-    "carbonSavingKg": 0.15
-  },
-  {
-    "title": "Take a shorter shower",
-    "description": "Reduce shower time to under 5 minutes.",
-    "points": 50,
-    "category": "Water",
-    "carbonSavingKg": 0.5
-  },
-  {
-    "title": "Use a cloth napkin instead of paper",
-    "description": "Reduce paper waste by using reusable napkins.",
-    "points": 3,
-    "category": "Waste",
-    "carbonSavingKg": 0.03
-  },
-  {
-    "title": "Compost food scraps",
-    "description": "Turn organic waste into compost instead of throwing it away.",
-    "points": 20,
-    "category": "Waste",
-    "carbonSavingKg": 0.2
-  },
-  {
-    "title": "Use a metal straw instead of plastic",
-    "description": "Avoid single-use plastic straws for your drinks today.",
-    "points": 1,
-    "category": "Waste",
-    "carbonSavingKg": 0.01
-  },
-  {
-    "title": "Donate old clothes",
-    "description": "Give away clothes you no longer wear instead of discarding them.",
-    "points": 30,
-    "category": "Waste",
-    "carbonSavingKg": 0.3
-  },
-  {
     "title": "Eat a meat-free meal",
     "description": "Try a vegetarian or vegan meal to reduce carbon footprint.",
     "points": 200,
@@ -84,59 +28,10 @@
     "carbonSavingKg": 2.0
   },
   {
-    "title": "Pick up 5 pieces of litter",
-    "description": "Help clean your local environment by picking up trash.",
-    "points": 0,
-    "category": "Community",
-    "carbonSavingKg": 0.0
-  },
-  {
-    "title": "Use natural light instead of electric lights",
-    "description": "Save electricity by relying on daylight when possible.",
-    "points": 10,
-    "category": "Energy",
-    "carbonSavingKg": 0.1
-  },
-  {
-    "title": "Reduce AC/heating usage for one hour",
-    "description": "Lower energy consumption by adjusting temperature for an hour.",
-    "points": 80,
-    "category": "Energy",
-    "carbonSavingKg": 0.8
-  },
-  {
-    "title": "Buy locally grown food",
-    "description": "Support local farmers and reduce transportation emissions.",
-    "points": 50,
-    "category": "Food",
-    "carbonSavingKg": 0.5
-  },
-  {
-    "title": "Plant a seed or small plant",
-    "description": "Grow something today to improve air quality and green your space.",
-    "points": 5,
-    "category": "Nature",
-    "carbonSavingKg": 0.05
-  },
-  {
-    "title": "Repair something instead of discarding it",
-    "description": "Extend the life of an item by fixing it rather than throwing it away.",
-    "points": 40,
-    "category": "Waste",
-    "carbonSavingKg": 0.4
-  },
-  {
     "title": "Take public transport instead of driving",
     "description": "Reduce your carbon footprint by using buses or trains.",
     "points": 150,
     "category": "Transport",
     "carbonSavingKg": 1.5
-  },
-  {
-    "title": "Share an eco-friendly tip with someone",
-    "description": "Encourage others to adopt sustainable habits.",
-    "points": 0,
-    "category": "Community",
-    "carbonSavingKg": 0.0
   }
 ]

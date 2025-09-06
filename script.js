@@ -20,11 +20,10 @@ class CoralImpactApp {
     }
 
     setupEventListeners() {
-        // Bottom navigation
+        // Bottom navigation - allow default link behavior
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.handleNavigation(item);
+                // All navigation items are now proper links, let browser handle navigation
             });
         });
 
@@ -239,33 +238,6 @@ class CoralImpactApp {
         this.showNotification('New day! Let\'s make a positive impact! 🌅');
     }
 
-    handleNavigation(item) {
-        // Remove active class from all nav items
-        document.querySelectorAll('.nav-item').forEach(nav => {
-            nav.classList.remove('active');
-        });
-
-        // Add active class to clicked item
-        item.classList.add('active');
-
-        // Handle different navigation actions
-        const text = item.querySelector('span').textContent.toLowerCase();
-        
-        switch(text) {
-            case 'tasks':
-                this.showNotification('Tasks view coming soon! 📋');
-                break;
-            case 'progress':
-                this.showProgress();
-                break;
-            case 'community':
-                this.showCommunity();
-                break;
-            default:
-                // Already on home page
-                break;
-        }
-    }
 
     showProgress() {
         const totalCo2 = this.dailyStats.co2Saved;
@@ -282,9 +254,6 @@ class CoralImpactApp {
         alert(message);
     }
 
-    showCommunity() {
-        this.showNotification('Community features coming soon! 👥');
-    }
 
     showNotification(message) {
         // Create notification element
