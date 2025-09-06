@@ -7,6 +7,15 @@
     "carbonSavingKg": 0.05
   },
   {
+    "title": "Ride a bike instead of walking",
+    "description": "Take a photo of a bike to verify you chose cycling for sustainable transport!",
+    "points": 150,
+    "category": "Transport",
+    "carbonSavingKg": 1.5,
+    "verification": "camera",
+    "verificationTarget": "bicycle"
+  },
+  {
     "title": "Walk or bike instead of driving",
     "description": "Choose walking or cycling for at least one short trip today.",
     "points": 120,

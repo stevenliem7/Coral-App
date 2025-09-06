@@ -100,6 +100,9 @@
                     <button id="coral-random-btn" style="padding: 8px 16px; background: rgba(76,222,128,0.2); color: #4ade80; border: 1px solid #4ade80; border-radius: 20px; cursor: pointer; font-size: 0.8em;">
                         🎲 Random
                     </button>
+                    <button onclick="openCameraVerification(1, 'Ride a bike instead of walking')" style="padding: 8px 16px; background: rgba(74,222,128,0.2); color: #4ade80; border: 1px solid #4ade80; border-radius: 20px; cursor: pointer; font-size: 0.8em;">
+                        🚴‍♀️ Test Bike Goal
+                    </button>
                 </div>
             </section>
 
@@ -495,6 +498,205 @@
         function windowResized() {
             // Keep canvas size fixed for the circular display
         }
+    </script>
+
+    <!-- Camera Verification Modal -->
+    <div id="camera-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 20px; border-radius: 15px; text-align: center; max-width: 90%; max-height: 90%;">
+            <h3 id="verification-title">📸 Verify Your Bike Ride!</h3>
+            <p id="verification-description">Take a photo of a bicycle to complete this sustainable transport goal</p>
+            
+            <div id="camera-container">
+                <video id="camera-video" autoplay playsinline style="width: 100%; max-width: 400px; border-radius: 10px;"></video>
+                <canvas id="camera-canvas" style="display: none;"></canvas>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <button id="capture-btn" style="background: #4CAF50; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; margin: 5px; cursor: pointer;">
+                    📷 Capture Photo
+                </button>
+                <button id="verify-btn" style="display: none; background: #2196F3; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; margin: 5px; cursor: pointer;">
+                    ✅ Verify & Complete
+                </button>
+                <button id="retake-btn" style="display: none; background: #FF9800; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; margin: 5px; cursor: pointer;">
+                    🔄 Retake Photo
+                </button>
+                <button id="cancel-camera-btn" style="background: #f44336; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; margin: 5px; cursor: pointer;">
+                    ❌ Cancel
+                </button>
+            </div>
+            
+            <div id="verification-status" style="margin-top: 15px; font-weight: bold;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Camera verification functionality
+        let currentStream = null;
+        let capturedImage = null;
+        let currentTaskId = null;
+
+        // Mock bike detection function (replace with actual YOLO/ML API)
+        function detectBicycle(imageData) {
+            // This is a simplified mock - in reality, you'd send to YOLOv8 API
+            // For demo purposes, we'll simulate detection
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    // Simulate 80% success rate for demo
+                    const detected = Math.random() > 0.2;
+                    resolve({
+                        detected: detected,
+                        confidence: detected ? 0.7 + Math.random() * 0.3 : 0.1,
+                        object: detected ? 'bicycle' : 'unknown'
+                    });
+                }, 1500); // Simulate processing time
+            });
+        }
+
+        // Open camera for verification
+        async function openCameraVerification(taskId, taskTitle) {
+            currentTaskId = taskId;
+            document.getElementById('verification-title').textContent = `📸 Verify: ${taskTitle}`;
+            document.getElementById('camera-modal').style.display = 'flex';
+            
+            try {
+                currentStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'environment', // Use back camera on mobile
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
+                });
+                document.getElementById('camera-video').srcObject = currentStream;
+            } catch (error) {
+                alert('Camera access denied. Please allow camera access to verify tasks.');
+                closeCameraModal();
+            }
+        }
+
+        // Capture photo
+        document.getElementById('capture-btn').addEventListener('click', function() {
+            const video = document.getElementById('camera-video');
+            const canvas = document.getElementById('camera-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+            
+            capturedImage = canvas.toDataURL('image/jpeg', 0.8);
+            
+            // Show captured image
+            video.style.display = 'none';
+            canvas.style.display = 'block';
+            
+            // Update buttons
+            document.getElementById('capture-btn').style.display = 'none';
+            document.getElementById('verify-btn').style.display = 'inline-block';
+            document.getElementById('retake-btn').style.display = 'inline-block';
+        });
+
+        // Retake photo
+        document.getElementById('retake-btn').addEventListener('click', function() {
+            const video = document.getElementById('camera-video');
+            const canvas = document.getElementById('camera-canvas');
+            
+            video.style.display = 'block';
+            canvas.style.display = 'none';
+            
+            document.getElementById('capture-btn').style.display = 'inline-block';
+            document.getElementById('verify-btn').style.display = 'none';
+            document.getElementById('retake-btn').style.display = 'none';
+            document.getElementById('verification-status').textContent = '';
+        });
+
+        // Verify and complete task
+        document.getElementById('verify-btn').addEventListener('click', async function() {
+            const statusDiv = document.getElementById('verification-status');
+            statusDiv.innerHTML = '🔍 Analyzing image for bicycle...';
+            statusDiv.style.color = '#2196F3';
+            
+            try {
+                const detection = await detectBicycle(capturedImage);
+                
+                if (detection.detected) {
+                    statusDiv.innerHTML = `✅ Bicycle detected! Confidence: ${Math.round(detection.confidence * 100)}%`;
+                    statusDiv.style.color = '#4CAF50';
+                    
+                    // Award points and update coral
+                    const taskPoints = 150; // Bike task points
+                    const bonusPoints = Math.floor(detection.confidence * 20); // Confidence bonus
+                    const totalPoints = taskPoints + bonusPoints;
+                    
+                    setTimeout(() => {
+                        // Update coral growth
+                        setCoralPoints(coralPoints + totalPoints);
+                        
+                        // Show success message
+                        statusDiv.innerHTML = `🪸 Task completed! +${totalPoints} points! Your coral reef celebrates sustainable transport!`;
+                        
+                        // Close modal after success
+                        setTimeout(() => {
+                            closeCameraModal();
+                            
+                            // Show coral growth animation
+                            document.querySelector('.coral-testing').style.background = 'linear-gradient(135deg, #4CAF50, #8BC34A)';
+                            setTimeout(() => {
+                                document.querySelector('.coral-testing').style.background = '';
+                            }, 2000);
+                        }, 3000);
+                    }, 1000);
+                    
+                } else {
+                    statusDiv.innerHTML = '❌ No bicycle detected. Please take a clearer photo of a bicycle.';
+                    statusDiv.style.color = '#f44336';
+                    
+                    // Reset for retry
+                    setTimeout(() => {
+                        document.getElementById('retake-btn').click();
+                    }, 2000);
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '⚠️ Verification failed. Please try again.';
+                statusDiv.style.color = '#FF9800';
+            }
+        });
+
+        // Cancel camera
+        document.getElementById('cancel-camera-btn').addEventListener('click', closeCameraModal);
+
+        function closeCameraModal() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+            }
+            
+            document.getElementById('camera-modal').style.display = 'none';
+            document.getElementById('camera-video').style.display = 'block';
+            document.getElementById('camera-canvas').style.display = 'none';
+            document.getElementById('capture-btn').style.display = 'inline-block';
+            document.getElementById('verify-btn').style.display = 'none';
+            document.getElementById('retake-btn').style.display = 'none';
+            document.getElementById('verification-status').textContent = '';
+            capturedImage = null;
+            currentTaskId = null;
+        }
+
+        // Add camera verification to task completion
+        function completeTaskWithVerification(taskId, taskTitle, hasVerification) {
+            if (hasVerification) {
+                openCameraVerification(taskId, taskTitle);
+            } else {
+                // Regular task completion
+                setCoralPoints(coralPoints + 50); // Default points
+            }
+        }
+
+        // Example: Add click handler for bike task (you'll need to integrate this with your existing task system)
+        document.addEventListener('DOMContentLoaded', function() {
+            // This would integrate with your existing task display system
+            console.log('Camera verification system ready! 📸🚴‍♀️');
+        });
     </script>
 </body>
 </html>
