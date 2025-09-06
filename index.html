@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coral - Today's Impact</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="hamburger-menu">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="logo">
+                    <h1>Coral</h1>
+                    <p class="subtitle">Today's Impact</p>
+                </div>
+                <div class="user-profile">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Impact Display -->
+            <section class="impact-display">
+                <div class="impact-circle">
+                    <div class="progress-ring">
+                        <svg class="progress-ring-svg" width="200" height="200">
+                            <circle
+                                class="progress-ring-circle-bg"
+                                stroke="rgba(255, 255, 255, 0.2)"
+                                stroke-width="8"
+                                fill="transparent"
+                                r="90"
+                                cx="100"
+                                cy="100"
+                            />
+                            <circle
+                                class="progress-ring-circle"
+                                stroke="#4ade80"
+                                stroke-width="8"
+                                fill="transparent"
+                                r="90"
+                                cx="100"
+                                cy="100"
+                                stroke-dasharray="565.48"
+                                stroke-dashoffset="424.11"
+                            />
+                        </svg>
+                        <div class="impact-icon">
+                            <i class="fas fa-hand-holding-heart"></i>
+                        </div>
+                    </div>
+                    <div class="impact-text">
+                        <div class="impact-percentage">25%</div>
+                        <div class="impact-label">Daily Goal</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Statistics Cards -->
+            <section class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card co2-saved">
+                        <div class="stat-value">2.4kg</div>
+                        <div class="stat-label">CO₂ Saved Today</div>
+                    </div>
+                    <div class="stat-card day-streak">
+                        <div class="stat-value">7</div>
+                        <div class="stat-label">Day Streak</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Today's Tasks -->
+            <section class="tasks-section">
+                <div class="section-header">
+                    <h2>Today's Tasks</h2>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                <div class="tasks-list" id="tasksList">
+                    <!-- Tasks will be dynamically added here -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-leaf"></i>
+                <span>Tasks</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Progress</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>Community</span>
+            </a>
+        </nav>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
