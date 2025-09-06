@@ -20,17 +20,34 @@ export default async function handler(req, res) {
     }
     
     try {
-        // Get query parameters
-        const { metrics = 'power', interval = '1h', hours = '24' } = req.query;
+        // Get query parameters with proper defaults
+        const { 
+            metrics = 'power,emissions', 
+            interval = '1h', 
+            hours = '24' 
+        } = req.query;
         
         // Calculate time range
         const endTime = new Date().toISOString();
         const startTime = new Date(Date.now() - parseInt(hours) * 60 * 60 * 1000).toISOString();
         
-        // Build OpenNEM API URL
-        const apiUrl = `https://api.openelectricity.org.au/v4/data/network/NEM?metrics=${metrics}&interval=${interval}&date_start=${startTime}&date_end=${endTime}`;
+        // Build proper OpenNEM API URL (correct endpoint structure)
+        const baseUrl = 'https://api.openelectricity.org.au';
+        const endpoint = '/data/network/NEM'; // Correct endpoint without v4 prefix
+        
+        // Build URL with proper parameter encoding
+        const params = new URLSearchParams({
+            metrics: metrics,
+            interval: interval,
+            date_start: startTime,
+            date_end: endTime
+        });
+        
+        const apiUrl = `${baseUrl}${endpoint}?${params.toString()}`;
         
         console.log('Fetching from OpenNEM:', apiUrl);
+        console.log('Using metrics:', metrics);
+        console.log('Time range:', { startTime, endTime });
         
         // Make request to OpenNEM API with authentication
         const response = await fetch(apiUrl, {
