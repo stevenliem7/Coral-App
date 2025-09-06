@@ -134,4 +134,4 @@ CoralCollective isn't just an app - it's a movement. By visualizing the collecti
 *Made with 💚 for ocean conservation and collective environmental action*
 
 **Live Demo**: https://coral-app.vercel.app/
-**GitHub**: https://github.com/stevenliem7/Coral-App
+**GitHub**: https://github.com/stevenliem7/Coral-App 
