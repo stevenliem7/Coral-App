@@ -19,6 +19,7 @@ export default function Home() {
   const [currentVerificationTask, setCurrentVerificationTask] = useState(null);
   const [showCameraModal, setShowCameraModal] = useState(false);
   const [showCarbonModal, setShowCarbonModal] = useState(false);
+  const [verificationStatus, setVerificationStatus] = useState('');
   
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -625,6 +626,7 @@ export default function Home() {
   const openCameraVerification = (task) => {
     setCurrentVerificationTask(task);
     setShowCameraModal(true);
+    setVerificationStatus('');
     startCamera();
   };
 
@@ -662,9 +664,11 @@ export default function Home() {
     if (!capturedImage || !currentVerificationTask) return;
 
     try {
+      setVerificationStatus('🤖 Initializing AI detection...');
+      
       // Load TensorFlow.js COCO-SSD model for real AI detection
       if (!window.cocoModel) {
-        console.log('Loading AI model...');
+        setVerificationStatus('📥 Loading TensorFlow.js library...');
         
         // Dynamically load TensorFlow.js
         if (!window.tf) {
@@ -676,6 +680,7 @@ export default function Home() {
           });
         }
         
+        setVerificationStatus('🧠 Loading COCO-SSD model...');
         if (!window.cocoSsd) {
           await new Promise((resolve) => {
             const script2 = document.createElement('script');
@@ -685,23 +690,41 @@ export default function Home() {
           });
         }
         
+        setVerificationStatus('⚡ Initializing neural network...');
         window.cocoModel = await window.cocoSsd.load();
-        console.log('✅ AI Model loaded successfully!');
+        setVerificationStatus('✅ AI model loaded successfully!');
       }
 
+      setVerificationStatus('🔍 Analyzing image for objects...');
+      
       // Create image element for detection
       const img = new Image();
       img.onload = async () => {
         const predictions = await window.cocoModel.detect(img);
-        console.log('🔍 AI Predictions:', predictions);
+        
+        // Show detected objects with confidence
+        if (predictions.length > 0) {
+          const detectedObjects = predictions
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 3)
+            .map(pred => `${pred.class} (${(pred.score * 100).toFixed(1)}%)`)
+            .join(', ');
+          setVerificationStatus(`🔍 Detected: ${detectedObjects}`);
+        } else {
+          setVerificationStatus('❌ No objects detected in image');
+        }
         
         let detectionSuccess = false;
+        let targetFound = null;
         
         if (currentVerificationTask.verificationTarget === 'bicycle') {
           const bicyclePrediction = predictions.find(pred => 
             pred.class === 'bicycle' && pred.score > 0.5
           );
           detectionSuccess = !!bicyclePrediction;
+          if (bicyclePrediction) {
+            targetFound = `bicycle (${(bicyclePrediction.score * 100).toFixed(1)}%)`;
+          }
         } else if (currentVerificationTask.verificationTarget === 'recycling_bin') {
           const recyclableClasses = [
             'bottle', 'wine glass', 'cup', 'can', 'bowl', 'cell phone', 'laptop', 
@@ -711,15 +734,37 @@ export default function Home() {
             recyclableClasses.includes(pred.class) && pred.score > 0.3
           );
           detectionSuccess = !!recyclablePrediction;
+          if (recyclablePrediction) {
+            targetFound = `${recyclablePrediction.class} (${(recyclablePrediction.score * 100).toFixed(1)}%)`;
+          }
         }
         
         if (detectionSuccess) {
-          console.log('✅ Verification successful!');
-          await toggleTaskCompletion(currentVerificationTask.id);
-          closeCameraModal();
-          alert('✅ Task completed successfully!');
+          const co2Amount = currentVerificationTask.displayUnit === 'g' 
+            ? `${(currentVerificationTask.carbonSavingKg * 1000).toFixed(1)}g`
+            : `${currentVerificationTask.carbonSavingKg.toFixed(1)}kg`;
+          setVerificationStatus(`✅ I see a ${targetFound}! You just saved ${co2Amount} CO₂!`);
+          setTimeout(async () => {
+            await toggleTaskCompletion(currentVerificationTask.id);
+            closeCameraModal();
+          }, 2000);
         } else {
-          alert('❌ Could not detect the required item. Please try again with a clearer photo.');
+          const targetType = currentVerificationTask.verificationTarget === 'bicycle' ? 'bicycle' : 'recyclable item';
+          let errorMessage = `❌ No ${targetType} detected.`;
+          
+          // Show what was detected instead
+          if (predictions.length > 0) {
+            const detectedObjects = predictions
+              .sort((a, b) => b.score - a.score)
+              .slice(0, 2)
+              .map(pred => `${pred.class} (${(pred.score * 100).toFixed(1)}%)`)
+              .join(', ');
+            errorMessage += ` I see: ${detectedObjects}. Please try again with a clearer photo.`;
+          } else {
+            errorMessage += ` Please try again with a clearer photo.`;
+          }
+          
+          setVerificationStatus(errorMessage);
         }
       };
       
@@ -727,7 +772,7 @@ export default function Home() {
       
     } catch (error) {
       console.error('🚨 AI Detection failed:', error);
-      alert('❌ Verification failed. Please try again.');
+      setVerificationStatus('❌ AI detection failed. Please try again.');
     }
   };
 
@@ -1000,23 +1045,23 @@ export default function Home() {
           <div className="section-header">
               <h2>Today's Tasks</h2>
             <a href="#" className="view-all">View All</a>
-          </div>
+            </div>
           <div className="tasks-list" id="tasksList">
             {tasks.map((task) => (
               <div key={task.id} className="task-card" onClick={() => handleTaskClick(task)}>
                 <div className={`task-icon ${task.icon}`}>
                   <i className={task.iconClass}></i>
-                </div>
+            </div>
                 <div className="task-content">
                   <div className="task-title">{task.title}</div>
                   <div className="task-description">{task.description}</div>
-                </div>
+          </div>
                 <div className="task-right">
                   <div className="task-co2">
                     -{task.displayUnit === 'g' 
                       ? `${(task.carbonSavingKg * 1000).toFixed(1)}g` 
                       : `${task.carbonSavingKg.toFixed(1)}kg`} CO₂
-                  </div>
+                </div>
                   <div className={`task-status ${task.completed ? 'completed' : ''}`}>
                     {task.completed ? '✓' : ''}
                   </div>
@@ -1095,7 +1140,7 @@ export default function Home() {
                   }}
                 />
                 <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-            <button 
+                <button
                     onClick={capturePhoto}
                     style={{
                       background: '#4CAF50',
@@ -1122,8 +1167,8 @@ export default function Home() {
                     }}
                   >
                     ❌ Cancel
-                  </button>
-                </div>
+                </button>
+              </div>
               </div>
             ) : (
               <div>
@@ -1138,7 +1183,7 @@ export default function Home() {
                   }}
                 />
                 <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                  <button
+            <button 
                     onClick={verifyPhoto}
                     style={{
                       background: '#4CAF50',
@@ -1179,8 +1224,28 @@ export default function Home() {
                     }}
                   >
                     ❌ Cancel
-                  </button>
+            </button>
                 </div>
+              </div>
+            )}
+            {verificationStatus && (
+              <div style={{ 
+                marginTop: '15px', 
+                fontWeight: 'bold',
+                padding: '10px',
+                borderRadius: '8px',
+                backgroundColor: verificationStatus.includes('✅') ? '#d4edda' : 
+                                verificationStatus.includes('❌') ? '#f8d7da' : 
+                                verificationStatus.includes('🔍') ? '#d1ecf1' : '#fff3cd',
+                color: verificationStatus.includes('✅') ? '#155724' : 
+                       verificationStatus.includes('❌') ? '#721c24' : 
+                       verificationStatus.includes('🔍') ? '#0c5460' : '#856404',
+                border: `1px solid ${verificationStatus.includes('✅') ? '#c3e6cb' : 
+                                    verificationStatus.includes('❌') ? '#f5c6cb' : 
+                                    verificationStatus.includes('🔍') ? '#bee5eb' : '#ffeeba'}`,
+                textAlign: 'center'
+              }}>
+                {verificationStatus}
               </div>
             )}
             <canvas ref={canvasRef} style={{ display: 'none' }} />
@@ -1211,7 +1276,7 @@ export default function Home() {
           }}>
             <h3>⚡ Carbon Intensity Check</h3>
             <p>Checking electricity grid...</p>
-            <button
+            <button 
               onClick={() => setShowCarbonModal(false)}
               style={{
                 background: '#9E9E9E',
