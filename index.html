@@ -508,7 +508,7 @@
             
             <div id="camera-container">
                 <video id="camera-video" autoplay playsinline style="width: 100%; max-width: 400px; border-radius: 10px;"></video>
-                <canvas id="camera-canvas" style="display: none;"></canvas>
+                <canvas id="camera-canvas" style="display: none; width: 100%; max-width: 400px; border-radius: 10px;"></canvas>
             </div>
             
             <div style="margin-top: 15px;">
@@ -536,21 +536,40 @@
         let capturedImage = null;
         let currentTaskId = null;
 
-        // Mock bike detection function (replace with actual YOLO/ML API)
-        function detectBicycle(imageData) {
-            // This is a simplified mock - in reality, you'd send to YOLOv8 API
-            // For demo purposes, we'll simulate detection
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    // Simulate 80% success rate for demo
-                    const detected = Math.random() > 0.2;
-                    resolve({
-                        detected: detected,
-                        confidence: detected ? 0.7 + Math.random() * 0.3 : 0.1,
-                        object: detected ? 'bicycle' : 'unknown'
-                    });
-                }, 1500); // Simulate processing time
-            });
+        // Real YOLOv8 bike detection function
+        async function detectBicycle(imageData) {
+            try {
+                const response = await fetch('http://localhost:5000/api/verify-bicycle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        image: imageData
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                return {
+                    detected: result.detected,
+                    confidence: result.confidence,
+                    object: result.object || 'bicycle',
+                    details: result.details
+                };
+            } catch (error) {
+                console.error('YOLOv8 detection error:', error);
+                // Fallback to mock detection if server is unavailable
+                return {
+                    detected: false,
+                    confidence: 0.0,
+                    object: 'error',
+                    error: 'Detection server unavailable. Please start the YOLOv8 server.'
+                };
+            }
         }
 
         // Open camera for verification
@@ -580,9 +599,16 @@
             const canvas = document.getElementById('camera-canvas');
             const ctx = canvas.getContext('2d');
             
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            ctx.drawImage(video, 0, 0);
+            // Set canvas size to match display size, not video resolution
+            const displayWidth = 400;
+            const displayHeight = (video.videoHeight / video.videoWidth) * displayWidth;
+            
+            canvas.width = displayWidth;
+            canvas.height = displayHeight;
+            canvas.style.width = displayWidth + 'px';
+            canvas.style.height = displayHeight + 'px';
+            
+            ctx.drawImage(video, 0, 0, displayWidth, displayHeight);
             
             capturedImage = canvas.toDataURL('image/jpeg', 0.8);
             
@@ -618,6 +644,12 @@
             
             try {
                 const detection = await detectBicycle(capturedImage);
+                
+                if (detection.error) {
+                    statusDiv.innerHTML = `⚠️ ${detection.error}`;
+                    statusDiv.style.color = '#FF9800';
+                    return;
+                }
                 
                 if (detection.detected) {
                     statusDiv.innerHTML = `✅ Bicycle detected! Confidence: ${Math.round(detection.confidence * 100)}%`;
