@@ -15,6 +15,7 @@ export default function CommunityPage() {
     cycling: 68,
     zerowaste: 42
   });
+
   const fetchLeaderboard = async () => {
     try {
       setIsLoading(true);
@@ -37,6 +38,7 @@ export default function CommunityPage() {
 
   useEffect(() => {
     fetchLeaderboard();
+
     // Load joined challenges from localStorage
     const savedJoinedChallenges = localStorage.getItem('joinedChallenges');
     if (savedJoinedChallenges) {
@@ -113,7 +115,6 @@ export default function CommunityPage() {
 
   return (
     <div className="app-container">
-      {/* Header */}
       <header className="header">
         <div className="header-content">
           <Link href="/" className="hamburger-menu">
@@ -129,9 +130,7 @@ export default function CommunityPage() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="main-content">
-        {/* Community Stats */}
         <section className="community-stats">
           <div className="stats-grid">
             <div className="stat-card community-impact">
@@ -145,7 +144,6 @@ export default function CommunityPage() {
           </div>
         </section>
 
-        {/* Leaderboard Section */}
         <section className="leaderboard-section">
           <div className="section-header">
             <h2>Top Contributors</h2>
@@ -167,7 +165,7 @@ export default function CommunityPage() {
                     {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
                   </div>
                 </div>
-                
+
                 <div className="member-info">
                   <div className="member-avatar">
                     {member.avatar}
@@ -177,7 +175,7 @@ export default function CommunityPage() {
                     <div className="member-location">{member.location}</div>
                   </div>
                 </div>
-                
+
                 <div className="member-stats">
                   <div className="stat-item">
                     <div className="stat-value">{member.total_points}</div>
@@ -189,7 +187,6 @@ export default function CommunityPage() {
           </div>
         </section>
 
-        {/* Challenges Section */}
         <section className="challenges-section">
           <h3>Community Challenges</h3>
           <div className="challenges-grid">
@@ -233,7 +230,7 @@ export default function CommunityPage() {
                 </button>
               </div>
             </div>
-            
+
             <div className="challenge-card">
               <div className="challenge-icon">
                 <i className="fas fa-recycle"></i>
@@ -276,7 +273,6 @@ export default function CommunityPage() {
             </div>
           </div>
         </section>
-
       </main>
     </div>
   );
