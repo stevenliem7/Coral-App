@@ -52,3 +52,8 @@ venv.bak/
 # Temporary files
 *.tmp
 *.temp
+<<<<<<< HEAD
+=======
+
+.vercel
+>>>>>>> 23ed210 (Add Coral App project with Next.js, AI verification, and community features)

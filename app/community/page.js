@@ -7,6 +7,17 @@ export default function CommunityPage() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+<<<<<<< HEAD
+=======
+  const [joinedChallenges, setJoinedChallenges] = useState({
+    cycling: false,
+    zerowaste: false
+  });
+  const [challengeProgress, setChallengeProgress] = useState({
+    cycling: 68,
+    zerowaste: 42
+  });
+>>>>>>> 23ed210 (Add Coral App project with Next.js, AI verification, and community features)
   const fetchLeaderboard = async () => {
     try {
       setIsLoading(true);
@@ -29,8 +40,44 @@ export default function CommunityPage() {
 
   useEffect(() => {
     fetchLeaderboard();
+<<<<<<< HEAD
   }, []);
 
+=======
+
+    // Load joined challenges from localStorage
+    const savedJoinedChallenges = localStorage.getItem('joinedChallenges');
+    if (savedJoinedChallenges) {
+      setJoinedChallenges(JSON.parse(savedJoinedChallenges));
+    }
+
+    // Load challenge progress from localStorage
+    const savedChallengeProgress = localStorage.getItem('challengeProgress');
+    if (savedChallengeProgress) {
+      setChallengeProgress(JSON.parse(savedChallengeProgress));
+    }
+  }, []);
+
+  const joinChallenge = (challengeType, challengeName) => {
+    if (!joinedChallenges[challengeType]) {
+      // Mark challenge as joined
+      const updatedJoined = { ...joinedChallenges, [challengeType]: true };
+      setJoinedChallenges(updatedJoined);
+      localStorage.setItem('joinedChallenges', JSON.stringify(updatedJoined));
+
+      // Increase progress by 10%
+      const currentProgress = challengeProgress[challengeType];
+      const newProgress = Math.min(100, currentProgress + 10);
+      const updatedProgress = { ...challengeProgress, [challengeType]: newProgress };
+      setChallengeProgress(updatedProgress);
+      localStorage.setItem('challengeProgress', JSON.stringify(updatedProgress));
+
+      // Show success message
+      alert(`Joined ${challengeName} challenge! 🚀\nYour participation increased the completion percentage!`);
+    }
+  };
+
+>>>>>>> 23ed210 (Add Coral App project with Next.js, AI verification, and community features)
   if (isLoading) {
     return (
       <div className="app-container">
@@ -164,10 +211,42 @@ export default function CommunityPage() {
                 <p>Join 500+ members cycling to work this week</p>
                 <div className="challenge-progress">
                   <div className="progress-bar">
+<<<<<<< HEAD
                     <div className="progress-fill" style={{ width: '68%' }}></div>
                   </div>
                   <div className="progress-text">68% Complete</div>
                 </div>
+=======
+                    <div className="progress-fill" style={{ width: `${challengeProgress.cycling}%` }}></div>
+                  </div>
+                  <div className="progress-text">{challengeProgress.cycling}% Complete</div>
+                </div>
+                <button
+                  className="join-challenge-btn"
+                  onClick={() => joinChallenge('cycling', 'Cycle to Work Week')}
+                  disabled={joinedChallenges.cycling}
+                  style={{
+                    background: joinedChallenges.cycling
+                      ? 'linear-gradient(135deg, #6b7280, #4b5563)'
+                      : 'linear-gradient(135deg, #4ade80, #22c55e)',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: '20px',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    cursor: joinedChallenges.cycling ? 'not-allowed' : 'pointer',
+                    marginTop: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    opacity: joinedChallenges.cycling ? 0.7 : 1
+                  }}
+                >
+                  <i className={joinedChallenges.cycling ? 'fas fa-check' : 'fas fa-users'}></i>
+                  {joinedChallenges.cycling ? '' : 'Join Initiative'}
+                </button>
+>>>>>>> 23ed210 (Add Coral App project with Next.js, AI verification, and community features)
               </div>
             </div>
             
@@ -180,10 +259,42 @@ export default function CommunityPage() {
                 <p>Reduce waste to zero for 7 days</p>
                 <div className="challenge-progress">
                   <div className="progress-bar">
+<<<<<<< HEAD
                     <div className="progress-fill" style={{ width: '42%' }}></div>
                   </div>
                   <div className="progress-text">42% Complete</div>
                 </div>
+=======
+                    <div className="progress-fill" style={{ width: `${challengeProgress.zerowaste}%` }}></div>
+                  </div>
+                  <div className="progress-text">{challengeProgress.zerowaste}% Complete</div>
+                </div>
+                <button
+                  className="join-challenge-btn"
+                  onClick={() => joinChallenge('zerowaste', 'Zero Waste Challenge')}
+                  disabled={joinedChallenges.zerowaste}
+                  style={{
+                    background: joinedChallenges.zerowaste
+                      ? 'linear-gradient(135deg, #6b7280, #4b5563)'
+                      : 'linear-gradient(135deg, #4ade80, #22c55e)',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: '20px',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    cursor: joinedChallenges.zerowaste ? 'not-allowed' : 'pointer',
+                    marginTop: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    opacity: joinedChallenges.zerowaste ? 0.7 : 1
+                  }}
+                >
+                  <i className={joinedChallenges.zerowaste ? 'fas fa-check' : 'fas fa-users'}></i>
+                  {joinedChallenges.zerowaste ? '' : 'Join Initiative'}
+                </button>
+>>>>>>> 23ed210 (Add Coral App project with Next.js, AI verification, and community features)
               </div>
             </div>
           </div>

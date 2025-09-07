@@ -1,9 +1,13 @@
 {
   "version": 2,
+<<<<<<< HEAD
   "buildCommand": "npm run build",
   "functions": {
     "app/api/*/route.js": {
       "runtime": "nodejs18"
     }
   }
+=======
+  "buildCommand": "npm run build"
+>>>>>>> 23ed210 (Add Coral App project with Next.js, AI verification, and community features)
 }
