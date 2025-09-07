@@ -7,8 +7,6 @@ export default function CommunityPage() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-<<<<<<< HEAD
-=======
   const [joinedChallenges, setJoinedChallenges] = useState({
     cycling: false,
     zerowaste: false
@@ -17,7 +15,6 @@ export default function CommunityPage() {
     cycling: 68,
     zerowaste: 42
   });
->>>>>>> 23ed210 (Add Coral App project with Next.js, AI verification, and community features)
   const fetchLeaderboard = async () => {
     try {
       setIsLoading(true);
@@ -40,11 +37,6 @@ export default function CommunityPage() {
 
   useEffect(() => {
     fetchLeaderboard();
-<<<<<<< HEAD
-  }, []);
-
-=======
-
     // Load joined challenges from localStorage
     const savedJoinedChallenges = localStorage.getItem('joinedChallenges');
     if (savedJoinedChallenges) {
@@ -77,7 +69,6 @@ export default function CommunityPage() {
     }
   };
 
->>>>>>> 23ed210 (Add Coral App project with Next.js, AI verification, and community features)
   if (isLoading) {
     return (
       <div className="app-container">
@@ -211,12 +202,6 @@ export default function CommunityPage() {
                 <p>Join 500+ members cycling to work this week</p>
                 <div className="challenge-progress">
                   <div className="progress-bar">
-<<<<<<< HEAD
-                    <div className="progress-fill" style={{ width: '68%' }}></div>
-                  </div>
-                  <div className="progress-text">68% Complete</div>
-                </div>
-=======
                     <div className="progress-fill" style={{ width: `${challengeProgress.cycling}%` }}></div>
                   </div>
                   <div className="progress-text">{challengeProgress.cycling}% Complete</div>
@@ -246,7 +231,6 @@ export default function CommunityPage() {
                   <i className={joinedChallenges.cycling ? 'fas fa-check' : 'fas fa-users'}></i>
                   {joinedChallenges.cycling ? '' : 'Join Initiative'}
                 </button>
->>>>>>> 23ed210 (Add Coral App project with Next.js, AI verification, and community features)
               </div>
             </div>
             
@@ -259,12 +243,6 @@ export default function CommunityPage() {
                 <p>Reduce waste to zero for 7 days</p>
                 <div className="challenge-progress">
                   <div className="progress-bar">
-<<<<<<< HEAD
-                    <div className="progress-fill" style={{ width: '42%' }}></div>
-                  </div>
-                  <div className="progress-text">42% Complete</div>
-                </div>
-=======
                     <div className="progress-fill" style={{ width: `${challengeProgress.zerowaste}%` }}></div>
                   </div>
                   <div className="progress-text">{challengeProgress.zerowaste}% Complete</div>
@@ -294,7 +272,6 @@ export default function CommunityPage() {
                   <i className={joinedChallenges.zerowaste ? 'fas fa-check' : 'fas fa-users'}></i>
                   {joinedChallenges.zerowaste ? '' : 'Join Initiative'}
                 </button>
->>>>>>> 23ed210 (Add Coral App project with Next.js, AI verification, and community features)
               </div>
             </div>
           </div>
