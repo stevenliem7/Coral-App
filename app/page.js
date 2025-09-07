@@ -20,11 +20,8 @@ export default function Home() {
   const [showCameraModal, setShowCameraModal] = useState(false);
   const [showCarbonModal, setShowCarbonModal] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState('');
-<<<<<<< HEAD
-=======
   const [showPointsPopup, setShowPointsPopup] = useState(false);
   const [pointsGained, setPointsGained] = useState(0);
->>>>>>> 23ed210 (Add Coral App project with Next.js, AI verification, and community features)
   
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -592,15 +589,6 @@ export default function Home() {
       co2Saved: Math.max(0, dailyStats.co2Saved + co2Change),
       completedTasks: dailyStats.completedTasks + (pointsChange > 0 ? 1 : -1)
     };
-<<<<<<< HEAD
-    
-    setDailyStats(newStats);
-    localStorage.setItem('dailyStats', JSON.stringify(newStats));
-    
-    // Update coral health based on CO₂ progress
-    const progress = Math.min(100, (newStats.co2Saved / newStats.dailyGoal) * 100);
-    setCoralHealth(progress);
-=======
 
     setDailyStats(newStats);
     localStorage.setItem('dailyStats', JSON.stringify(newStats));
@@ -652,7 +640,6 @@ export default function Home() {
     localStorage.removeItem('challengeProgress');
 
     console.log('User progress reset to 0');
->>>>>>> 23ed210 (Add Coral App project with Next.js, AI verification, and community features)
   };
 
   const addTaskActivity = async (task, pointsChange) => {
@@ -895,11 +882,8 @@ export default function Home() {
         // Give half points for medium intensity
         await addTaskActivity(task, task.points / 2);
         updateDailyStats(task.carbonSavingKg / 2, task.points / 2);
-<<<<<<< HEAD
-=======
         // Mark task as completed
         toggleTaskCompletion(task.id);
->>>>>>> 23ed210 (Add Coral App project with Next.js, AI verification, and community features)
         setShowCarbonModal(false);
       }
     } else {
@@ -1112,20 +1096,6 @@ export default function Home() {
             </div>
           <div className="tasks-list" id="tasksList">
             {tasks.map((task) => (
-<<<<<<< HEAD
-              <div key={task.id} className="task-card" onClick={() => handleTaskClick(task)}>
-                <div className={`task-icon ${task.icon}`}>
-                  <i className={task.iconClass}></i>
-            </div>
-                <div className="task-content">
-                  <div className="task-title">{task.title}</div>
-                  <div className="task-description">{task.description}</div>
-          </div>
-                <div className="task-right">
-                  <div className="task-co2">
-                    -{task.displayUnit === 'g' 
-                      ? `${(task.carbonSavingKg * 1000).toFixed(1)}g` 
-=======
               <div
                 key={task.id}
                 className={`task-card ${task.completed ? 'completed-task' : ''}`}
@@ -1141,16 +1111,15 @@ export default function Home() {
               >
                 <div className={`task-icon ${task.icon}`} style={task.completed ? { backgroundColor: '#bbb', color: '#888' } : {}}>
                   <i className={task.iconClass}></i>
-            </div>
+                </div>
                 <div className="task-content">
                   <div className="task-title" style={task.completed ? { textDecoration: 'line-through', color: '#666' } : {}}>{task.title}</div>
                   <div className="task-description" style={task.completed ? { color: '#888' } : {}}>{task.description}</div>
-          </div>
+                </div>
                 <div className="task-right">
                   <div className="task-co2" style={task.completed ? { color: '#888' } : {}}>
                     -{task.displayUnit === 'g'
                       ? `${(task.carbonSavingKg * 1000).toFixed(1)}g`
->>>>>>> 23ed210 (Add Coral App project with Next.js, AI verification, and community features)
                       : `${task.carbonSavingKg.toFixed(1)}kg`} CO₂
                 </div>
                   <div className={`task-status ${task.completed ? 'completed' : ''}`}>
@@ -1162,31 +1131,6 @@ export default function Home() {
           </div>
         </section>
 
-<<<<<<< HEAD
-      </main>
-
-      {/* Bottom Navigation - EXACT from HTML */}
-      <nav className="bottom-nav">
-        <a href="#" className="nav-item active">
-          <i className="fas fa-home"></i>
-          <span>Home</span>
-        </a>
-        <a href="#" className="nav-item">
-          <i className="fas fa-leaf"></i>
-          <span>Tasks</span>
-        </a>
-        <a href="#" className="nav-item">
-          <i className="fas fa-chart-line"></i>
-          <span>Progress</span>
-        </a>
-        <a href="#" className="nav-item">
-          <i className="fas fa-users"></i>
-          <span>Community</span>
-        </a>
-      </nav>
-
-      {/* Camera Modal */}
-=======
         {/* Reset Progress Section */}
         <section className="reset-section" style={{ marginTop: '20px', textAlign: 'center' }}>
           <button
@@ -1217,8 +1161,27 @@ export default function Home() {
 
       </main>
 
-        {/* Camera Modal */}
->>>>>>> 23ed210 (Add Coral App project with Next.js, AI verification, and community features)
+      {/* Bottom Navigation - EXACT from HTML */}
+      <nav className="bottom-nav">
+        <a href="#" className="nav-item active">
+          <i className="fas fa-home"></i>
+          <span>Home</span>
+        </a>
+        <a href="#" className="nav-item">
+          <i className="fas fa-leaf"></i>
+          <span>Tasks</span>
+        </a>
+        <a href="#" className="nav-item">
+          <i className="fas fa-chart-line"></i>
+          <span>Progress</span>
+        </a>
+        <a href="#" className="nav-item">
+          <i className="fas fa-users"></i>
+          <span>Community</span>
+        </a>
+      </nav>
+
+      {/* Camera Modal */}
       {showCameraModal && (
         <div style={{
           position: 'fixed',
@@ -1401,11 +1364,7 @@ export default function Home() {
           }}>
             <h3>⚡ Carbon Intensity Check</h3>
             <p>Checking electricity grid...</p>
-<<<<<<< HEAD
-            <button 
-=======
             <button
->>>>>>> 23ed210 (Add Coral App project with Next.js, AI verification, and community features)
               onClick={() => setShowCarbonModal(false)}
               style={{
                 background: '#9E9E9E',
@@ -1423,8 +1382,6 @@ export default function Home() {
         </div>
       )}
 
-<<<<<<< HEAD
-=======
       {/* Points Popup */}
       {showPointsPopup && (
         <div style={{
@@ -1450,8 +1407,6 @@ export default function Home() {
           </div>
         </div>
       )}
-
->>>>>>> 23ed210 (Add Coral App project with Next.js, AI verification, and community features)
       {/* Coral Growth Script */}
       <script src="https://cdn.jsdelivr.net/npm/p5@1.9.3/lib/p5.min.js"></script>
       <script dangerouslySetInnerHTML={{
